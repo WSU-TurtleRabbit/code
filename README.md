@@ -1,2 +1,2 @@
-# rabbit-code
+# code
 Software, including firmware, control algorithms, etc.

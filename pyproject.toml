@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "SSL"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "moteus"
+]
+
+dynamic = [
+    "version"
+]
+
+[tools.setuptools.packages.find]
+where = ["src"]
+
+[tools.setuptools.dynamic]
+version = {attr = "SSL.__version__"}

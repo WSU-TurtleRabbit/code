@@ -25,7 +25,7 @@ class Controller:
 
 class WheelController:
     async def __init__(self):
-        self.load_from_config(os.path.join(os.getcwd(), 'wheelconfig.json'))
+        self.load_from_config(os.path.join(os.getcwd(), 'example.config.json'))
  
 
         self.transport = moteus_pi3hat.Pi3HatRouter(
@@ -74,13 +74,32 @@ class WheelController:
         u = (H.T@Vb)/self.r
         return u
     
-    def load_from_config(self, root):
-        with open(root) as f:
+    def load_from_config(self, fname):
+        if not os.path.exists(fname):
+            raise FileExistsError(f".json config doesn't exist ({fname=})")
+        
+        with open(fname) as f:
             config = json.load(f)
         f.close()
-        
-        params = config['servo']["dimensions"]
 
-        self.d = params["d"]
-        self.r = params["r"]
-        self.b = params["b"]
+        if not 'servo' in config:
+            raise KeyError(f"invaild .json config: key 'servo' not found")
+        if not 'dimensions' in config['servo']:
+            raise KeyError(f"invaild .json config: 'servo' (sub)key 'dimensions' not found")
+        
+        dimensions = config['servo']["dimensions"]
+
+        if not 'distance_from_origin' in dimensions:
+            raise KeyError(f"invaild .json config: key 'distance_from_origin' not found")
+
+        self.d = dimensions["distance_from_origin"]["values"]
+
+        if not len(self.d) == 4:
+            raise ValueError(f"invaild .json config: key 'distance_from_origin' doesn't have enough parameters, need 4, got {len(self.d)}")
+        
+        self.r = dimensions["wheel_radius"]["values"]
+
+        self.b = dimensions["wheel_slip_angle"]["values"]
+
+        if not len(self.b) == 4:
+            raise ValueError(f"invaild .json config: key 'wheel_slip_angle' doesn't have enough parameters, need 4, got {len(self.b)}")

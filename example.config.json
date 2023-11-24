@@ -1,0 +1,19 @@
+{
+    "servo": {
+        "id": 0,
+        "dimensions": {
+            "distance_from_origin": {
+                "description": "distance from the origin to the middle of the wheel's width, (in cm)",
+                "values": [10.0, 10.0, 10.0, 10.0]
+            },
+            "wheel_radius": {
+                "description": "average radius of the wheels (in cm)",
+                "values": 5.0
+            },
+            "wheel_slip_angle": {
+                "description": "angle of the omniwheel's rollers (referenced from direction of travel), expected to be a float and in radians",
+                "values": [5.0, 5.0, 5.0, 5.0]
+            }
+        }
+    }
+}

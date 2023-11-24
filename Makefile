@@ -5,7 +5,7 @@ PYTHON = ./bin/python3
 all: $(VENV)/bin/activate
 
 $(VENV)/bin/activate: pyproject.toml
-	virtualenv -p /usr/bin/python3 .
+	virtualenv .
 	$(PIP) install -e . 
 
 clean:

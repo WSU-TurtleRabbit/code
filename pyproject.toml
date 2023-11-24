@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "SSL"
+name = "TurtleRabbitSSL"
 requires-python = ">=3.9"
 dependencies = [
     "numpy",
@@ -18,4 +18,4 @@ dynamic = [
 where = ["src"]
 
 [tools.setuptools.dynamic]
-version = {attr = "SSL.__version__"}
+version = {attr = "TurtleRabbitSSL.__version__"}

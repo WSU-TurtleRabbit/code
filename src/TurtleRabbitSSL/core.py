@@ -9,19 +9,13 @@ import json
 import os
 
 import numpy as np
+from TurtleRabbitSSL.utils import redirect_print_to_log
 
 def poll_laptop():
     vx = 1.
     vy = 1.
     theta = np.pi/2
     return (vx, vy, theta)
-
-class Controller:
-    def __init__(self):
-        return NotImplementedError
-    
-    def run(self):
-        return NotImplementedError
 
 class WheelController:
     async def __init__(self):
@@ -44,6 +38,7 @@ class WheelController:
 
         await self.transport.cycle(x.make_stop() for x in self.servos.values())
 
+    @redirect_print_to_log('log.txt')
     async def run(self, delay=.2):
         while True:
             vx, vy, theta = poll_laptop()
@@ -64,6 +59,13 @@ class WheelController:
             await asyncio.sleep(delay)
 
     def calc_u(self, vx, vy, theta):
+        '''
+        "Modern Robotics: Mechanics, Planning & Control"
+        13.2.1
+        
+        just leaving this here for no particular reason:
+        libgen (dot) rs
+        '''
         Vb = np.array([theta, vx, vy])
         H = np.array([[-self.d[0], -self.d[1], -self.d[2], -self.d[3]],
                 [np.cos(self.b[0]), np.cos(self.b[1]), -np.cos(self.b[2]), -np.cos(self.b[3])],

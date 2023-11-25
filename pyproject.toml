@@ -7,7 +7,9 @@ name = "TurtleRabbitSSL"
 requires-python = ">=3.9"
 dependencies = [
     "numpy",
-    "moteus"
+    "moteus",
+    "moteus-pi3hat",
+    "protobuf"
 ]
 
 dynamic = [

@@ -12,7 +12,7 @@ from google.protobuf.internal import builder as _builder
 _sym_db = _symbol_database.Default()
 
 
-import messages_robocup_ssl_detection_tracked_pb2 as messages__robocup__ssl__detection__tracked__pb2
+import TurtleRabbitSSL.proto2.messages_robocup_ssl_detection_tracked_pb2 as messages__robocup__ssl__detection__tracked__pb2
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n*messages_robocup_ssl_wrapper_tracked.proto\x1a,messages_robocup_ssl_detection_tracked.proto\"_\n\x14TrackerWrapperPacket\x12\x0c\n\x04uuid\x18\x01 \x02(\t\x12\x13\n\x0bsource_name\x18\x02 \x01(\t\x12$\n\rtracked_frame\x18\x03 \x01(\x0b\x32\r.TrackedFrame')

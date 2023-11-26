@@ -5,5 +5,5 @@ import asyncio
 import TurtleRabbitSSL
 
 if __name__ == '__main__':
-    wheels = TurtleRabbitSSL.WheelController()
+    wheels = TurtleRabbitSSL.Controllers.MotionController()
     asyncio.run(wheels.run())

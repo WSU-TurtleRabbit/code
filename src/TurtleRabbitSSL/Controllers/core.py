@@ -17,7 +17,7 @@ def poll_laptop():
     theta = np.pi/2
     return (vx, vy, theta)
 
-class WheelController:
+class MotionController:
     async def __init__(self):
         self.load_from_config(os.path.join(os.getcwd(), 'example.config.json'))
  

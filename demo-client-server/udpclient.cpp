@@ -54,10 +54,71 @@ std::string UdpClient::receiveMessage() {
     return "";
 }
 
+std::string UdpClient::listenForBroadcast(int broadcastPort) {
+    int broadcastSocket = socket(AF_INET, SOCK_DGRAM, 0);
+    if (broadcastSocket < 0) {
+        std::cerr << "Error opening broadcast socket." << std::endl;
+        return "";
+    }
+
+    struct sockaddr_in listenAddr;
+    memset(&listenAddr, 0, sizeof(listenAddr));
+    listenAddr.sin_family = AF_INET;
+    listenAddr.sin_port = htons(broadcastPort);
+    listenAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+    if (bind(broadcastSocket, (struct sockaddr *)&listenAddr, sizeof(listenAddr)) < 0) {
+        std::cerr << "Error binding broadcast socket." << std::endl;
+        close(broadcastSocket);
+        return "";
+    }
+
+    char buffer[1024];
+    struct sockaddr_in senderAddr;
+    socklen_t senderAddrLen = sizeof(senderAddr);
+
+    ssize_t n = recvfrom(broadcastSocket, buffer, sizeof(buffer), 0, 
+                         (struct sockaddr *)&senderAddr, &senderAddrLen);
+    close(broadcastSocket);
+
+    if (n > 0) {
+        buffer[n] = '\0';
+        return std::string(inet_ntoa(senderAddr.sin_addr)); // Return the sender's IP
+    }
+
+    return "";
+}
+
+void UdpClient::setServerAddress(const std::string& server_ip, int server_port) {
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(server_port);
+    inet_pton(AF_INET, server_ip.c_str(), &server_addr.sin_addr);
+}
+
 
 // Main function (for testing)
-int main() {
-    UdpClient client("127.0.0.1", 4711);  // Replace with your server IP and port
+int main(int argc, char *argv[]) {
+    std::string serverIP;
+    int serverPort = 4711;
+    
+    if (argc > 1) {
+        serverIP = argv[1]; 
+    }
+
+    UdpClient client(serverIP.empty() ? "0.0.0.0" : serverIP, serverPort); 
+
+    if (serverIP.empty()) {
+        // if there's no server IP, we listen for broadcasts (server discovery)
+        serverIP = client.listenForBroadcast(50021);
+        if (serverIP.empty()) {
+            std::cerr << "Failed to discover server via broadcast." << std::endl;
+            return 1;
+        }
+        // Update client with discovered server IP
+        client.setServerAddress(serverIP, serverPort);    
+    }
+    
     client.sendMessage("Hello, UDP Server!");
 
     while (true) {
@@ -72,4 +133,3 @@ int main() {
 
     return 0;
 }
-

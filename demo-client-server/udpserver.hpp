@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_map>
 #include <netinet/in.h>
+#include <cstring>
 
 class UdpServer {
 public:

@@ -47,6 +47,7 @@ private:
     void handleAcknowledgement(const std::string& message, const struct sockaddr_in& bot_addr);
     std::string getBotKey(const struct sockaddr_in& bot_addr);
     void sendMessageToBot(const std::string& message, const struct sockaddr_in& bot_addr);
+    std::string getLocalIPAddress();
 };
 
 #endif // UDPSERVER_HPP

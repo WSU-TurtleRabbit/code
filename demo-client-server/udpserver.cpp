@@ -141,6 +141,31 @@ void UdpServer::handleAcknowledgement(const std::string& message, const struct s
     }
 }
 
+std::string getLocalIPAddress() {
+    struct ifaddrs *interfaces = nullptr;
+    struct ifaddrs *addr = nullptr;
+    std::string ipAddress = "Not found";
+
+    if (getifaddrs(&interfaces) == -1) {
+        std::cerr << "Failed to get network interfaces" << std::endl;
+        return ipAddress;
+    }
+
+    for (addr = interfaces; addr != nullptr; addr = addr->ifa_next) {
+        if (addr->ifa_addr && addr->ifa_addr->sa_family == AF_INET) { // Check for IPv4
+            // Skip the loopback interface
+            if (strcmp(addr->ifa_name, "lo") != 0) {
+                ipAddress = inet_ntoa(((struct sockaddr_in *)addr->ifa_addr)->sin_addr);
+                break;
+            }
+        }
+    }
+
+    freeifaddrs(interfaces);
+    return ipAddress;
+}
+
+
 // Main function (for testing)
 int main() {
     UdpServer server(4711);

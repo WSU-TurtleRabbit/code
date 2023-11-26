@@ -11,7 +11,6 @@ public:
 
     void sendMessage(const std::string& message);
     std::string receiveMessage();
-    std::string listenForBroadcast(int broadcastPort);
     void setServerAddress(const std::string& server_ip, int server_port);
 
 private:

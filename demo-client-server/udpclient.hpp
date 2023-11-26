@@ -10,6 +10,7 @@ public:
     ~UdpClient();
 
     void sendMessage(const std::string& message);
+    std::string receiveMessage();
 
 private:
     int sockfd;

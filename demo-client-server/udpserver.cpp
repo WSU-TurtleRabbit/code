@@ -168,11 +168,12 @@ std::string getLocalIPAddress() {
 
 // Main function (for testing)
 int main() {
-    UdpServer server(4711);
+    UdpServer server(4711, 100);
+
+    std::cout << "[TurtleRabbit server running. Press <return> to stop." << std::endl;
+    
     server.start();
-
     std::cin.get();
-
     server.stop();
     return 0;
 }

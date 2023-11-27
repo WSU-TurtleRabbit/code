@@ -1,7 +1,9 @@
 #ifndef UDPCLIENT_HPP
 #define UDPCLIENT_HPP
 
+#include <atomic>
 #include <string>
+#include <vector>
 #include <netinet/in.h>
 
 class UdpClient {

@@ -8,6 +8,7 @@
 #include <numeric>
 #include <string>
 #include <unordered_map>
+#include <vector>
 #include <netinet/in.h>
 #include <cstring>
 

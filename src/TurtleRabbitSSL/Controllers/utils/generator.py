@@ -23,8 +23,12 @@ async def main():
         vy = random.uniform(0.1, 3.0)
         tfd = random.uniform(0.1, 3.0)
         
-        message_wrapper = messages_turtlerabbit_ssl_agent_pb2.RobotAgentCommand(
+        message_motioncommand = messages_turtlerabbit_ssl_agent_pb2.AgentMotionCommand(
             id=id, vx=vx, vy=vy, tfd=tfd)
+        
+        message_wrapper = messages_turtlerabbit_ssl_agent_pb2.AgentCommandWrapper(
+            motion=message_motioncommand
+        )
         
         print(message_wrapper)
         print(message_wrapper.SerializeToString())

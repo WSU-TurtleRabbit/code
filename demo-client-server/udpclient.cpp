@@ -102,6 +102,11 @@ UdpClient::receiveUpdates()
             std::cout << "Received message: " << message << std::endl;
             lastMessageTime = std::chrono::steady_clock::now();
             reconnectAttempts = 0;
+            if (message.rfind("Time: ",0) == 0)
+            {
+                std::string ack = "Ack: " + message;
+                sendMessage(ack);
+            }
         } else {
             if (std::chrono::steady_clock::now() - lastMessageTime > std::chrono::seconds(10))
             {

@@ -77,7 +77,6 @@ UdpServer::listen()
         {
             buffer[n] = '\0';
             std::string message(buffer);
-
             if (message.rfind("Ack: ", 0) == 0)
             {
                 handleAcknowledgement(message, bot_addr);
@@ -201,7 +200,6 @@ UdpServer::handleAcknowledgement(const std::string& message, const struct sockad
     auto roundTripTime = std::chrono::duration_cast<std::chrono::milliseconds>(now - sentTime);
     
     std::lock_guard<std::mutex> guard(bots_mutex);
-    
     // Store the round trip time in the client's statistics
     commStats[key].rtt.push_back(roundTripTime);
 

@@ -3,7 +3,7 @@ import json
 import socket
 from grSim_Packet_pb2 import grSim_Packet
 from random_agent import RandomAgent
-from avoid import Avoid
+from basic_agent import BasicAgent
 
 class Simulation():
     def __init__(self, agents):
@@ -16,7 +16,7 @@ class Simulation():
         balldata = data["balls"][0]
         self.detection["ball"]["x"] = balldata["x"]
         self.detection["ball"]["y"] = balldata["y"]
-        
+
         if "robots_yellow" in data:
             yellow_players = data["robots_yellow"]
             for yellow_player in yellow_players:
@@ -29,8 +29,8 @@ class Simulation():
             for blue_player in blue_players:
                 robot_id = blue_player["robot_id"]
                 self.detection["robots_blue"][robot_id] = blue_player
-                
-                    
+
+
     def is_ready(self):
         return (len(self.detection["robots_yellow"]) == 6) and (len(self.detection["robots_blue"]) == 6)
 
@@ -101,7 +101,7 @@ class Simulation():
         
     
 
-agent1 = RandomAgent(1)
+agent1 = BasicAgent(1)
 agent2 = RandomAgent(2)
 sim = Simulation([agent1, agent2])
 sim.run()

@@ -15,15 +15,24 @@ serverSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 serverSock.bind((UDP_IP_ADDRESS,UDP_PORT_NO))
 
 addresses = list()
+RobotList = list()
 
 def checkingIn (): 
-        
-    while len(addresses)<6:
+    timeout = time.time() +10
+    #while time.time() < timeout:
+    while True:
         data, addr = serverSock.recvfrom(1024) #buffersize is 1024 bytes
-        print(data)
-        addresses.append(addr)
-        print(addresses)
-        statusReq()
+        robotID = int(data.decode())
+        if ((addr not in addresses) & (robotID not in RobotList)):
+            addresses.append(addr)
+            RobotList.append(robotID)
+            print(robotID,RobotList,addresses)
+        elif(robotID in RobotList):
+            i = RobotList.index(robotID)
+            addresses[i] = addr
+            break
+        
+    statusReq()
 
 
 def getRobotVelocity():
@@ -35,33 +44,39 @@ def getRobotVelocity():
     sendMessage(message)
 
 def statusReq():
-    
-    end_time = time.time() + 1
-
-    while time.time() < end_time:
-        msg = b'status check'
-        sendMessage(msg)
-        data, addr = serverSock.recvfrom(1024) #buffersize is 1024 bytes
-        Robotid = int(data.decode())
-        print(Robotid)
-
-        if (Robotid <= 6):
-            print(time.time()," Robot id :",str(Robotid),"is alive")
-            data = ""
-            break
-        else: 
-            print("dead")             
-
-
-def sendMessage(msg):
     i = 0
-    for i in range (len(addresses)):
-        
+    for i in range (len(RobotList)):
+        end_time = time.time() + 0.005
+
+        while time.time() < end_time:
+            msg = b'status check'
+            sendMessage(RobotList[i], msg)
+            data, addr = serverSock.recvfrom(1024) #buffersize is 1024 bytes
+            Robotid = int(data.decode())
+            if(Robotid in RobotList):
+                print(time.time()," Robot id :",str(Robotid),"is alive")
+                data = ""
+                break
+            else : 
+                print("dead")
+                RobotList.remove(RobotList[i])
+                addresses.remove(addresses[i])
+                     
+def sendMessage(Robot_id, msg):
+    if(Robot_id in RobotList):
+        i = RobotList.index(Robot_id)
         serverSock.sendto(msg, (addresses[i]))
-             
-        # except Exception as e:
-        #     print(UDP_PORT_NO,"cannot connect")
-        i+=1
+    else:
+        print("Robot", Robot_id, "Does not exist")
+
+
+def Broadcast(msg):
+    i = 0
+    for i in range (len(RobotList)):
+        print(i, len(RobotList))
+        serverSock.sendto(msg, (addresses[i]))
+        time.sleep(10)
+
+           
 
 checkingIn()
-statusReq()

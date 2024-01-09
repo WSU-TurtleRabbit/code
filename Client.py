@@ -87,12 +87,12 @@ def main ():
 
     while True:
         data, addr = clientSock.recvfrom(1024) #buffersize is 1024 bytes
-        
+        data = data.decode()
+        print(data)
         #make the robot move
-        if (data == b'status check'):
-            msg = byteRID
-            clientSock.sendto(msg, (addr))
-            print(msg)
+        if (data == 'status check'):
+            clientSock.sendto(byteRID, (addr))
+            data = ''
             
 
         elif (data != ""):

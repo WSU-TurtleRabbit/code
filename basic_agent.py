@@ -7,9 +7,12 @@ class BasicAgent(agent):
         super().__init__(id)
 
     def act(self, frame):
-        ball_x = frame['detection']['ball']['x']
-        ball_y = frame['detection']['ball']['y']
-        ball_position = (ball_x, ball_y)
+        if "ball" in frame["detection"]:
+            ball_x = frame['detection']['ball']['x']
+            ball_y = frame['detection']['ball']['y']
+            ball_position = (ball_x, ball_y)
+        else:
+            ball_position = None
         
         my_x = frame['detection']['robots_blue'][self.id]['x']
         my_y = frame['detection']['robots_blue'][self.id]['y']

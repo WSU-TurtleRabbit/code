@@ -7,7 +7,7 @@ def getMessage():
     #forms a message
     
     #Vx,Vy,w,timeout
-    message = "1,2,1,0.5"
+    message = b'1,2,1,2'
     return message
 
 def main():
@@ -21,11 +21,10 @@ def main():
 
     msg = getMessage()
     ## declare our serverSocket upon which we will be listening for UDP messages
-
     serverSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
     serverSock.sendto(msg, (UDP_IP_ADDRESS, UDP_PORT_NO))
 
 
-
+main()

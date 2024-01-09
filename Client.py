@@ -7,16 +7,24 @@ import moteus
 
 ## Function to conver the data obtained from the server to 4 separate values
 def Convert(data):
+    data = data.decode()
+    print(data, "\n", type(data))
+    vx, vy, w, rt = 0,0,0,0
     ## we use try so we can see if we get any error over here
     try:
         ## using .split method to split the 4 different values
-        vx,vy,w,rt = data.split()
+        vx,vy,w,rt = data.split(',')
+        vx = int(vx)
+        vy = int(vy)
+        w = int(w)
+        rt = int(rt)
     except:
         ## prints the following message if any error has occured
         print ("error in spliting string values")
     finally:
         ## after it finished, the 4 values will be printed and returned to the main function
         print("New Values : ",vx, vy, w, rt)
+        print(type(rt))
         return vx,vy,w,rt 
 
 def Move(vx,vy,w,rt):
@@ -26,6 +34,7 @@ def Move(vx,vy,w,rt):
     t_end = time.time()+rt
     # while the time is not at endtime yet,
     while time.time() <t_end:
+        print(time.time(), t_end)
         #move according to their own wheel velocity
         print("moving at :",w1,w2,w3,w4)
         
@@ -53,9 +62,8 @@ def main ():
             print ("Received: ", data)
             vx,vy,w,rt = Convert(data)
             Move(vx,vy,w,rt)
-        else: 
-            # Moteus.makestop()
-            continue
+            data = ""
+        
 
     
-
+main()

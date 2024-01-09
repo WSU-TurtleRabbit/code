@@ -6,6 +6,7 @@ To run, first compile the proto files with the command:
 
 ```bash
 protoc --python_out=. *.proto
+```
 
 This will compile them in the current directory, which is needed for agent_simulator.py to run.
 

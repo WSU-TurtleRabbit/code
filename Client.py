@@ -28,7 +28,7 @@ def Convert(data):
         print(type(rt))
         return vx,vy,w,rt 
 
-def Move(vx,vy,w,rt):
+def Cal(vx,vy,w):
     '''
     "Modern Robotics: Mechanics, Planning & Control"
     13.2.1
@@ -51,13 +51,20 @@ def Move(vx,vy,w,rt):
     u = (H.T@Vb)/r
     # calculate the different wheel speed
     w1,w2,w3,w4 = u[0],u[1],u[2],u[3] #some calculation 
+    return w1,w2,w3,w4
+    
+    
+def Move(w1,w2,w3,w4,rt):
     # give an ending timer
     t_end = time.time()+rt
     # while the time is not at endtime yet,
     while time.time() <t_end:
         print(time.time(), t_end)
-        #move according to their own wheel velocity
+        # potentially: replace with moteus code to get them moving according to their own wheel velocity
         print("moving at :",w1,w2,w3,w4)
+        time.sleep(rt)
+    
+    print("end")    # suggestion : this part will probably be replaced by sleep or something
         
 # at this time, the robot will be moved accordingly and should be stopped after the timer is up
 # Thus, it will be returned at the main loop        
@@ -82,12 +89,17 @@ def main ():
         
         #make the robot move
         if (data != ""):
+            # debug message recived
             print ("Received: ", data)
+            # Converting the data into the 4 different values
             vx,vy,w,rt = Convert(data)
-            Move(vx,vy,w,rt)
+            # giving the values to the move function to calculate and move potentially
+            w1,w2,w3,w4 = Cal(vx,vy,w)
+            Move(w1,w2,w3,w4,rt)
             # resets the data so it can receive new data afterwards
-            data = ""
-        
-
+            data = str(input())
+            if (data == "exit"):
+                clientSock.close()
+                exit()
     
 main()

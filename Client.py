@@ -2,6 +2,7 @@
 
 import socket
 import time
+import numpy as np
 import moteus
 
 
@@ -28,8 +29,28 @@ def Convert(data):
         return vx,vy,w,rt 
 
 def Move(vx,vy,w,rt):
+    '''
+    "Modern Robotics: Mechanics, Planning & Control"
+    13.2.1
+    
+    just leaving this here for no particular reason:
+    libgen (dot) rs
+    '''
+    # placehoder values
+    r = 1  #radius
+    b = np.array([1,1,1,1]) #different angl values
+    d = np.array([1,1,1,1]) #different wheel values
+    
+    Vb = np.array([w, vx, vy])
+    H = np.array([[-d[0], -d[1], -d[2], -d[3]],
+            [np.cos(b[0]), np.cos(b[1]), -np.cos(b[2]), -np.cos(b[3])],
+            [np.sin(b[0]), -np.sin(b[1]), -np.sin(b[2]), np.sin(b[3])],
+            ])
+    
+    # [H (transposed) (dot) Vb]/r
+    u = (H.T@Vb)/r
     # calculate the different wheel speed
-    w1,w2,w3,w4 = 0,1,1,2 #some calculation 
+    w1,w2,w3,w4 = u[0],u[1],u[2],u[3] #some calculation 
     # give an ending timer
     t_end = time.time()+rt
     # while the time is not at endtime yet,
@@ -44,6 +65,8 @@ def Move(vx,vy,w,rt):
 
 # main function
 def main ():
+    # suggestion : add init() function ?
+
     # initialising UDP address and Port number
     # these two has to be the same as the server.py
     UDP_IP_ADDRESS = "127.0.0.1"
@@ -62,6 +85,7 @@ def main ():
             print ("Received: ", data)
             vx,vy,w,rt = Convert(data)
             Move(vx,vy,w,rt)
+            # resets the data so it can receive new data afterwards
             data = ""
         
 

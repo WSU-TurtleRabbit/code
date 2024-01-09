@@ -4,6 +4,7 @@ import socket
 import time
 import numpy as np
 import moteus
+import random
 
 
 ## Function to conver the data obtained from the server to 4 separate values
@@ -63,22 +64,38 @@ def Move(w1,w2,w3,w4):
 # main function
 def main ():
     # suggestion : add init() function ?
-
+    Robot_id = random.randint(1,6)
+    str_Robot_id = str(Robot_id)
+    byteRID = str_Robot_id.encode()
+    print(Robot_id)
+    print(byteRID)
+    
     # initialising UDP address and Port number
-    # these two has to be the same as the server.py
-    UDP_IP_ADDRESS = "127.0.0.1"
-    UDP_PORT_NO = 6789
+
+    #Randomising UDP IP and Port num
+    UDP_IP_ADDRESS = "127.0.0." + str(random.randint(1,9))
+    UDP_PORT_NO = random.randint(6000,6100)
 
     ## initalising clientsocket for internet and UDP
     clientSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     ## binding the IP address and UDP port number
     clientSock.bind((UDP_IP_ADDRESS,UDP_PORT_NO))
+    serverIP = "127.0.1.1" 
+    serverPort = 9000 
+
+    clientSock.sendto(byteRID,(serverIP,serverPort))
 
     while True:
         data, addr = clientSock.recvfrom(1024) #buffersize is 1024 bytes
         
         #make the robot move
-        if (data != ""):
+        if (data == b'status check'):
+            msg = byteRID
+            clientSock.sendto(msg, (addr))
+            print(msg)
+            
+
+        elif (data != ""):
             # debug message recived
             print ("Received: ", data)
             vx,vy,w,rt = Convert(data)
@@ -87,11 +104,10 @@ def main ():
                 w1,w2,w3,w4 = Cal(vx,vy,w)
                 Move(w1,w2,w3,w4)
                 time.sleep(rt)
+        
 
-            # Converting the data into the 4 different values
-            # giving the values to the move function to calculate and move potentially
-            
-            # resets the data so it can receive new data afterwards
+        
+
             
             #windows debug
             # data = str(input())

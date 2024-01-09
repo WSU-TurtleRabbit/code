@@ -54,20 +54,10 @@ def Cal(vx,vy,w):
     return w1,w2,w3,w4
     
     
-def Move(w1,w2,w3,w4,rt):
-    # give an ending timer
-    t_end = time.time()+rt
-    # while the time is not at endtime yet,
-    while time.time() <t_end:
-        print(time.time(), t_end)
-        # potentially: replace with moteus code to get them moving according to their own wheel velocity
+def Move(w1,w2,w3,w4):
+ # potentially: replace with moteus code to get them moving according to their own wheel velocity
         print("moving at :",w1,w2,w3,w4)
-        time.sleep(rt)
-    
-    print("end")    # suggestion : this part will probably be replaced by sleep or something
         
-# at this time, the robot will be moved accordingly and should be stopped after the timer is up
-# Thus, it will be returned at the main loop        
     
 
 # main function
@@ -91,15 +81,22 @@ def main ():
         if (data != ""):
             # debug message recived
             print ("Received: ", data)
-            # Converting the data into the 4 different values
             vx,vy,w,rt = Convert(data)
+            t_end = time.time()+rt
+            while time.time() <t_end:
+                w1,w2,w3,w4 = Cal(vx,vy,w)
+                Move(w1,w2,w3,w4)
+                time.sleep(rt)
+
+            # Converting the data into the 4 different values
             # giving the values to the move function to calculate and move potentially
-            w1,w2,w3,w4 = Cal(vx,vy,w)
-            Move(w1,w2,w3,w4,rt)
+            
             # resets the data so it can receive new data afterwards
-            data = str(input())
-            if (data == "exit"):
-                clientSock.close()
-                exit()
+            
+            #windows debug
+            # data = str(input())
+            # if (data == "exit"):
+            #     clientSock.close()
+            #     exit()
     
 main()

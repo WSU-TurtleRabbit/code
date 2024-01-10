@@ -7,21 +7,21 @@ import os
 ## Defining the UDP ADDRESS AND PORT NO 
 ## This has to be the same as the robot.
 hostname = socket.gethostname()
-serverIP = socket.gethostbyname(hostname)
+# SERVERIP = socket.gethostbyname(hostname)
 
-serverIP = os.popen('hostname -I').read().split(" ")[0]
-print(f"{serverIP=}")
+SERVERIP = os.popen('hostname -I').read().split(" ")[0]
+print(f"{SERVERIP=}")
  
 print("Your Computer Name is:" + hostname)
-print("Your Computer IP Address is:" + serverIP) 
-serverPort = 5000
+print("Your Computer IP Address is:" + SERVERIP) 
+SERVERPORT = 5000
 
 
 ## send port, recieving port
 
 ## declare our serverSocket upon which we will be listening for UDP messages
 serverSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-serverSock.bind((serverIP, serverPort))
+serverSock.bind((SERVERIP, SERVERPORT))
 
 #the array to save for ip addresses and ports
 addresses = list()

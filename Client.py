@@ -14,7 +14,7 @@ def Convert(data):
     vx, vy, w, rt = 0,0,0,0
     ## we use try so we can see if we get any error over here
     try:
-        ## using .split method to split the 4 different values
+        ## using .split method to split the 4 different int values
         vx,vy,w,rt = data.split(',')
         vx = int(vx)
         vy = int(vy)
@@ -26,7 +26,7 @@ def Convert(data):
     finally:
         ## after it finished, the 4 values will be printed and returned to the main function
         print("New Values : ",vx, vy, w, rt)
-        print(type(rt))
+        # print(type(rt))
         return vx,vy,w,rt 
 
 def Cal(vx,vy,w):
@@ -54,10 +54,10 @@ def Cal(vx,vy,w):
     w1,w2,w3,w4 = u[0],u[1],u[2],u[3] #some calculation 
     return w1,w2,w3,w4
     
-    
+# getting the robot to move accroding to the 4 wheel values calculated.
 def Move(w1,w2,w3,w4):
- # potentially: replace with moteus code to get them moving according to their own wheel velocity
-        print("moving at :",w1,w2,w3,w4)
+    # potentially: replace with moteus code to get them moving according to their own wheel velocity
+    print("moving at :",w1,w2,w3,w4)
         
     
 
@@ -80,33 +80,44 @@ def main ():
     clientSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     ## binding the IP address and UDP port number
     clientSock.bind((UDP_IP_ADDRESS,UDP_PORT_NO))
+    #server information(IP and Port)
     serverIP = "127.0.1.1" 
     serverPort = 9000 
 
     clientSock.sendto(byteRID,(serverIP,serverPort))
-
+    # Robot will always be up for listening message
     while True:
         data, addr = clientSock.recvfrom(1024) #buffersize is 1024 bytes
         data = data.decode()
         print(data)
-        #make the robot move
+
+        #pings the robot
         if (data == 'status check'):
+            # sends the byte version of RobotID to the server
             clientSock.sendto(byteRID, (addr))
             data = ''
             
-
+        # if the data has 4 values
         elif (data != ""):
             # debug message recived
             print ("Received: ", data)
+            #Converting the data and stores into these 4 variables
             vx,vy,w,rt = Convert(data)
+            # calculates the velocity
+            w1,w2,w3,w4 = Cal(vx,vy,w)
+            
+            # This method maybe changed / discarded
+            #initialise timer 
             t_end = time.time()+rt
+            # run the following until runtime expires
             while time.time() <t_end:
-                w1,w2,w3,w4 = Cal(vx,vy,w)
                 Move(w1,w2,w3,w4)
-                time.sleep(rt)
+                time.sleep(rt) #comment this after debug
+            data = ""
         
-
-        
+        # catches a new non defined message 
+        else: 
+            print("New message :",data)
 
             
             #windows debug

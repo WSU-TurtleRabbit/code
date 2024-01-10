@@ -14,7 +14,8 @@ from .Utils import Utils
 
 
 class PRMController:
-    def __init__(self, numOfRandomCoordinates, allObs, current, destination):
+    def __init__(self, numOfRandomCoordinates, allObs, current, destination,
+                 ):
         self.numOfCoords = numOfRandomCoordinates
         self.coordsList = np.array([])
         self.allObs = allObs
@@ -23,11 +24,24 @@ class PRMController:
         self.graph = Graph()
         self.utils = Utils()
         self.solutionFound = False
-
+        self.min_x = 0
+        self.max_x = 100
+        self.min_y = 0
+        self.max_y = 100
+        
+    def setBoundaries(self, x_min, y_min, x_max, y_max):
+        self.x_min = x_min
+        self.x_max = x_max
+        self.y_min = y_min
+        self.y_max = y_max
+        
     def runPRM(self, initialRandomSeed, saveImage=True):
         seed = initialRandomSeed
         # Keep resampling if no solution found
-        while(not self.solutionFound):
+        N = 0
+#        while(not self.solutionFound):
+        while (not self.solutionFound and N < 10):
+            N += 1
             print("Trying with random seed {}".format(seed))
             np.random.seed(seed)
 
@@ -52,9 +66,12 @@ class PRMController:
             plt.savefig("{}_samples.png".format(self.numOfCoords))
         plt.show()
 
-    def genCoords(self, maxSizeOfMap=100):
-        self.coordsList = np.random.randint(
-            maxSizeOfMap, size=(self.numOfCoords, 2))
+    def genCoords(self):
+        X = np.random.randint(self.x_min, self.x_max, 
+                              size=(self.numOfCoords, 1))
+        Y = np.random.randint(self.y_min, self.y_max, 
+                              size=(self.numOfCoords, 1))
+        self.coordsList = np.concatenate((X,Y), axis=1)
         # Adding begin and end points
         self.current = self.current.reshape(1, 2)
         self.destination = self.destination.reshape(1, 2)

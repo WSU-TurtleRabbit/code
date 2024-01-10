@@ -8,7 +8,7 @@ from classes import PRMController, Obstacle, Utils
 def main(args):
 
     parser = argparse.ArgumentParser(description='PRM Path Planning Algorithm')
-    parser.add_argument('--numSamples', type=int, default=1000, metavar='N',
+    parser.add_argument('--numSamples', type=int, default=47, metavar='N',
                         help='Number of sampled points')
     args = parser.parse_args()
 
@@ -33,10 +33,15 @@ def main(args):
             obs.printFullCords()
             allObs.append(obs)
 
-    utils = Utils()
+    utils = Utils(0,0,600,400)
+#    utils.setBoundaries(allObs, current, destination, 
+#                        x_margin = 50, y_margin = 10)
+    x_min, y_min, x_max, y_max = utils.getBoundaries()
+    
     utils.drawMap(allObs, current, destination)
 
     prm = PRMController(numSamples, allObs, current, destination)
+    prm.setBoundaries(x_min, y_min, x_max, y_max)
     # Initial random seed to try
     initialRandomSeed = 0
     prm.runPRM(initialRandomSeed)

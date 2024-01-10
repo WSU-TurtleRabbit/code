@@ -1,18 +1,27 @@
 ## Importing the socket Python Module
 import socket
 import time
+import os
 
 
 ## Defining the UDP ADDRESS AND PORT NO 
 ## This has to be the same as the robot.
-UDP_IP_ADDRESS = "127.0.1.1" 
-UDP_PORT_NO = 9000 
+hostname = socket.gethostname()
+serverIP = socket.gethostbyname(hostname)
+
+serverIP = os.popen('hostname -I').read().split(" ")[0]
+print(f"{serverIP=}")
+ 
+print("Your Computer Name is:" + hostname)
+print("Your Computer IP Address is:" + serverIP) 
+serverPort = 5000
+
 
 ## send port, recieving port
 
 ## declare our serverSocket upon which we will be listening for UDP messages
 serverSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-serverSock.bind((UDP_IP_ADDRESS,UDP_PORT_NO))
+serverSock.bind((serverIP, serverPort))
 
 #the array to save for ip addresses and ports
 addresses = list()

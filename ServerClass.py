@@ -40,13 +40,13 @@ class Server():
         print(ADDR)
         
         
-        while len(ADDR) < 2:
+        while len(ADDR) < 4:
             bSOCK.sendto(serverAddr,('',12342))
+            print("Broadcasting")
             data, addr = self.sock.recvfrom(1024) #buffersize is 1024 bytes
             # if the server recieves a hi
             print(data, addr)
             RobotID = data.decode()
-            RobotAddr = addr
             ADDR[RobotID]=(addr)
             LAST[RobotID] = TIME
             print(ADDR)

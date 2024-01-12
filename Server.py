@@ -10,8 +10,9 @@ import time
 def main() : 
     # initiate socket
     server = Server()
-    
+    server.broadcast()
     server.pingAll()
+    #server.pingAll()
     
 
 

@@ -94,7 +94,7 @@ class Robot :
             print(serverIP,serverPort)
         except ConnectionError :
             print("Cannot Connect to server")
-        except ExceptionGroup as e:
+        except Exception as e:
             print(e)
         finally:
             pingSuccess = True
@@ -110,7 +110,7 @@ class Robot :
 
         # could be replaced by something else
     
-    
+    # TO BE WORKED ON
     def CalWheelVel(self,vx,vy,w):
         '''
         "Modern Robotics: Mechanics, Planning & Control"

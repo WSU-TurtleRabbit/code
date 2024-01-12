@@ -11,6 +11,8 @@ def main() :
     # initiate socket
     server = Server()
     
+    server.pingAll()
+    
 
 
 

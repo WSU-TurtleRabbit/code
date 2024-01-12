@@ -5,35 +5,8 @@ import time
 import numpy as np
 import moteus
 import random
-import Server as s
+import oldServer as s
 
-def Init():
-    # suggestion : add init() function ?
-    Robot_id = random.randint(1,6)
-    str_Robot_id = str(Robot_id)
-    byteRID = str_Robot_id.encode()
-    print(Robot_id)
-    print(byteRID)
-    
-    # initialising UDP address and Port number
-
-    #Randomising UDP IP and Port num
-    UDP_IP_ADDRESS = "127.0.0." + str(random.randint(1,9))
-    UDP_PORT_NO = random.randint(6000,6100)
-
-    ## initalising clientsocket for internet and UDP
-    clientSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    ## binding the IP address and UDP port number
-    clientSock.bind((UDP_IP_ADDRESS,UDP_PORT_NO))
-    #server information(IP and Port)
-    serverIP = ""
-    serverPort = ""
-    
-    print("The Server IP Address is:", serverIP, "The Server Port is : ", server ) 
-    
-
-    clientSock.sendto(byteRID,(serverIP,serverPort))
-    
 
 ## Function to conver the data obtained from the server to 4 separate values
 def Convert(data):
@@ -94,6 +67,32 @@ def Move(w1,w2,w3,w4):
 
 # main function
 def main ():
+     # suggestion : add init() function ?
+    Robot_id = random.randint(1,6)
+    str_Robot_id = str(Robot_id)
+    byteRID = str_Robot_id.encode()
+    print(Robot_id)
+    print(byteRID)
+    
+    # initialising UDP address and Port number
+
+    #Randomising UDP IP and Port num
+    UDP_IP_ADDRESS = "127.0.0." + str(random.randint(1,9))
+    UDP_PORT_NO = random.randint(6000,6100)
+
+    ## initalising clientsocket for internet and UDP
+    clientSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    ## binding the IP address and UDP port number
+    clientSock.bind((UDP_IP_ADDRESS,UDP_PORT_NO))
+    #server information(IP and Port)
+    serverIP = ""
+    serverPort = ""
+    
+    print("The Server IP Address is:", serverIP, "The Server Port is : ", server ) 
+    
+
+    clientSock.sendto(byteRID,(serverIP,serverPort))
+
 
     # Robot will always be up for listening message
     while True:

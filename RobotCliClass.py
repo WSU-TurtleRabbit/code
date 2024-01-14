@@ -1,115 +1,116 @@
 import socket
-import os 
+import os
 import random
+import time
 
 SERVER = {
-    "IP" : "",
-    "PORT" : ""
+    "IP": "",
+    "PORT": ""
 }
 
 
 class RobotCli:
 
     def __init__(self):
-        self.id = int(input(id))
+        self.id = self.get_robot_id()
+        print(f"This Robot is now with ID: {self.id}")
         self.b_id = bytes(str(self.id).encode())
-        self.sock, self.ip, self.port= self.CreateSock()
-        self.Listen()
-            # Sends message to server
+        self.sock, self.ip, self.port = self.create_sock()
+        self.listen()
+
+    def send_message(self, msg):
+        self.sock.sendto(msg, (SERVER["IP"], int(SERVER["PORT"])))
+        print(f"{msg} has been sent")
+
     
-    def sendMessage(self, msg):
-        self.sock.sendto(msg,(SERVER["IP"], int(SERVER["PORT"])))
-        print(msg," has been sent")
+    def move(self, vx, vy, w, rt):
+        v1,v2,v3,v4 = calculate(vx,vy,w)
+        endTime = time.time() + rt
+        while time.time() < endTime:
+            print(vx, vy, w, rt)
 
+    # Classes that are only accessible in this script
 
-
-    #classes that are only accessible in this script
-
-    def CreateSock(self):
-        #normal socket
+    def create_sock(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        
-        #Broadcast channel
-        bSOCK = socket.socket(socket.AF_INET, #internet
-                            socket.SOCK_DGRAM, #UDP coms
-                            socket.IPPROTO_UDP # UDP broadcast
-                            )
-        bSOCK.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
-        bSOCK.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        try:
-            bSOCK.bind(("",12342))
-            print(bSOCK)
-        except Exception as e:
-            print("Error in binding Broadcast :", type(e))
-            print(e)
-            exit()
+        bsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        bsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        bsock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        # locate IP 
-        # For this instance, we will be using the os to do that
-        #Windows: 
-        #Linux : 
+        try:
+            bsock.bind(("", 12342))
+        except Exception as e:
+            print("Error in binding Broadcast:", type(e))
+            print(e)
+            raise  # Raise an exception
+        
+        #ip = ''
         ip = os.popen('hostname -I').read().split(" ")[0]
-        binding = True
-        while binding:
-            try :
-                port = random.randint(5000,9000)
-                sock.bind((ip,port))
+        isbinding = True
+
+        while isbinding:
+            try:
+                port = random.randint(5000, 9000)
+                sock.bind((ip, port))
                 self.sock = sock
-                binding = False
+                isbinding = False
             except Exception as e:
-                print("error in binding",e)
+                print("Error in binding:", e)
                 pass
-            finally :
+            finally:
                 print(ip, port)
-        data,addr = bSOCK.recvfrom(1024)
+
+        data, addr = bsock.recvfrom(1024)
         print(data)
-        SERVER["IP"],SERVER["PORT"] = data.decode().split(", ")
-        print(SERVER, (SERVER["IP"],SERVER["PORT"]))
+        SERVER["IP"], SERVER["PORT"] = data.decode().split(", ")
+        print(SERVER, (SERVER["IP"], SERVER["PORT"]))
         msg = self.b_id
-        self.sendMessage(msg)
+        self.send_message(msg)
 
         return sock, ip, port
 
-
-
-
-
-
-    # after finished initialise
-    def Listen(self):
-        while True: 
-            data, addr = self.sock.recvfrom(1024) #buffersize is 1024 bytes
+    def listen(self):
+        while True:
+            data, addr = self.sock.recvfrom(1024)
             msg = data.decode()
-            if (msg == "ping"):
-                newMsg = self.b_id
-            else : 
-                try: 
-                    vx,vy,w,rt = msg.split(",",3)
-                    vx = int(vx)
-                    vy = int(vy)
-                    w = int(w)
-                    rt = int(rt)
-                    self.Move(vx,vy,w,rt)
-                    newMsg = "Moving"
+
+            if msg == "ping":
+                new_msg = self.b_id
+            else:
+                try:
+                    vx, vy, w, rt = map(int, msg.split(",", 3))
+                    self.move(vx, vy, w, rt)
+                    new_msg = "Moving"
                 except Exception as e:
                     print(e)
-                    exit()
+                    raise
 
-            if(newMsg != ""):    
-                self.sendMessage(newMsg)
-                
-def Move(vx,vy,w,rt):
-    print(vx,vy,w,rt)
+            if new_msg != "":
+                self.send_message(new_msg)
+
+    @staticmethod
+    def get_robot_id():
+        while id == 0:
+            try:
+                id = input("Please Enter Robot ID: ")
+                int(id)
+            except Exception as e:
+                print(e)
+                id = 0
+            
+        return id
+
+def calculate(vx,vy,w):
+        #inputing eqn
+        v1,v2,v3,v4 = 0,0,0,0
+        return v1,v2,v3,v4
 
 
-
-#Apply to server for ID
-def ApplyID(serverAddr):
+# Apply to server for ID
+def apply_id(server_addr):
     id = 0
-    while id == 0 : 
+    while id == 0:
         print('hi')
 
-            
-    return
 
 Robot = RobotCli()

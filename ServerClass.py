@@ -18,29 +18,48 @@ class Server:
 
     def broadcast(self):
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as bsock:
-            bsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+            bsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             bsock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
             server_addr = f"{self.ip}, {self.port}".encode()
 
-            while len(ADDR) < 6:
+            # Set the maximum number of robots you want to discover
+            max_robots_to_discover = 6
+
+            while len(ADDR) <= max_robots_to_discover:
                 print("Broadcasting info", server_addr)
-                #Broadcasting server Info @broadcasting port
-                bsock.sendto(server_addr, ('', 12342))
-                data, addr = self.sock.recvfrom(1024)
-                robot_id = data.decode()
-                print(f"Received RobotID: {id} response from the address : {addr}")
-                # Add / update the data recieved 
-                ADDR[robot_id] = addr
-                LAST[robot_id] = TIME
-                #debug check
-                print(ADDR)
-                print(LAST)
+
+                # Set the maximum time for broadcasting in seconds
+                max_broadcast_time = 10
+                start_time = time.time()
+
+                while time.time() - start_time < max_broadcast_time:
+                    # Broadcasting server Info @broadcasting port
+                    bsock.sendto(server_addr, ('<broadcast>', 12342))
+                    print("Broadcasting")
+                    time.sleep(2)
+
+                    try:
+                        # Set a timeout for receiving responses
+                        self.sock.settimeout(1)
+                        data, addr = self.sock.recvfrom(1024)
+                        robot_id = data.decode()
+                        print(f"Received RobotID: {robot_id} response from the address : {addr}")
+                        # Add/update the received data
+                        ADDR[robot_id] = addr
+                        LAST[robot_id] = TIME
+                        # Debug check
+                        print(ADDR)
+                        print(LAST)
+                    except socket.timeout:
+                        # Ignore timeouts and continue broadcasting
+                        pass
 
     def ping_all(self):
         msg = b'ping'
-        for id in range(6):
+        for i in range(6):
             status = False
+            id = i+1
             s_id = str(id)
             try:
                 addr = ADDR[s_id]
@@ -67,7 +86,9 @@ class Server:
 
 def create_sock():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    ip = os.popen('hostname -I').read().split(" ")[0]
+    #ip = os.popen('hostname -I').read().split(" ")[0]
+    ip = socket.gethostbyname(socket.gethostname())
+
     binding = True
     while binding:
         try:

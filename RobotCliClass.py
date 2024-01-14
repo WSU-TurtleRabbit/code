@@ -34,7 +34,7 @@ class RobotCli:
     def create_sock(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         bsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        bsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        bsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         bsock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
         try:
@@ -44,8 +44,8 @@ class RobotCli:
             print(e)
             raise  # Raise an exception
         
-        #ip = ''
-        ip = os.popen('hostname -I').read().split(" ")[0]
+        ip = socket.gethostbyname(socket.gethostname())
+        #ip = os.popen('hostname -I').read().split(" ")[0]
         isbinding = True
 
         while isbinding:
@@ -90,6 +90,7 @@ class RobotCli:
 
     @staticmethod
     def get_robot_id():
+        id = 0
         while id == 0:
             try:
                 id = input("Please Enter Robot ID: ")

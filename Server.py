@@ -11,7 +11,7 @@ def main() :
     # initiate socket
     server = Server()
     server.broadcast()
-    server.pingAll()
+    server.ping_all()
     #server.pingAll()
     
 

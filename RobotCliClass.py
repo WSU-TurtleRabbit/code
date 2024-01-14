@@ -44,8 +44,11 @@ class RobotCli:
             print(e)
             raise  # Raise an exception
         
-        ip = socket.gethostbyname(socket.gethostname())
-        #ip = os.popen('hostname -I').read().split(" ")[0]
+        #windows
+        #ip = socket.gethostbyname(socket.gethostname())
+        #raspberrypi
+        ip = os.popen("hostname -I").read().strip()
+
         isbinding = True
 
         while isbinding:

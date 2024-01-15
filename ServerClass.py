@@ -86,10 +86,11 @@ class Server:
 
 def create_sock():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    
     #linux
-    #ip = os.popen('hostname -I').read().strip()
+    #ip = os.popen('hostname -I').read().split(" ")[0]    
     #Windows
-    ip = socket.gethostbyname(socket.gethostname())
+    #ip = socket.gethostbyname(socket.gethostname())
 
     binding = True
     while binding:

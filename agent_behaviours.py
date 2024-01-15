@@ -2,7 +2,7 @@
 
 import math
 
-def go_towards_ball(ball_position, agent_position, speed=3.0):
+def go_towards_ball(ball_position, agent_position, speed=1.0):
     if ball_position:
 
         delta_x = ball_position[0] - agent_position[0]

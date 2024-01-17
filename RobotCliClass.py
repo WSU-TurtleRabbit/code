@@ -8,28 +8,21 @@ SERVER = {
     "PORT": ""
 }
 
-
+## Class for the Robot Client
 class RobotCli:
 
+    ## This func. will be triggered when an object is initiated
     def __init__(self):
+        # 1. it will try to assign an ID
         self.id = self.get_robot_id()
+        self.stop = False
         print(f"This Robot is now with ID: {self.id}")
+        # 2. since the messages has to be sent as byte, we convert it into a string then bytes
         self.b_id = bytes(str(self.id).encode())
+        # 3. we create a Socket for sending and receiving on the UDP Server.
         self.sock, self.ip, self.port = self.create_sock()
+        # After everything has been set, the robot will start listening continuously
         self.listen()
-
-    def send_message(self, msg):
-        self.sock.sendto(msg, (SERVER["IP"], int(SERVER["PORT"])))
-        print(f"{msg} has been sent")
-
-    
-    def move(self, vx, vy, w, rt):
-        v1,v2,v3,v4 = calculate(vx,vy,w)
-        endTime = time.time() + rt
-        while time.time() < endTime:
-            print(vx, vy, w, rt)
-
-    # Classes that are only accessible in this script
 
     def create_sock(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -72,8 +65,31 @@ class RobotCli:
 
         return sock, ip, port
 
+    # func for send message
+    # this is useful as it optimise the repetition of this line.
+    def send_message(self, msg):
+        # the socket will send message to the server address and port
+        self.sock.sendto(msg, (SERVER["IP"], int(SERVER["PORT"])))
+        # feedback on the client when the message has been sent
+        print(f"{msg} has been sent")
+
+    
+
+        
+    ## This func. is design to calculate and move the robot accordingly
+    def move(self, vx, vy, w, rt):
+        v1,v2,v3,v4 = calculate(vx,vy,w)
+        endTime = time.time() + rt
+        while time.time() < endTime:
+            if not self.stop:
+                #set 4 wheel velocity and start moving
+                print(vx, vy, w, rt)
+
+
+    ## This functions provides a loop for recieving message
     def listen(self):
-        while True:
+        # while it is active
+        while not self.stop:
             data, addr = self.sock.recvfrom(1024)
             msg = data.decode()
 
@@ -104,10 +120,11 @@ class RobotCli:
             
         return id
 
+# calculates the 4 wheel Velocity
 def calculate(vx,vy,w):
-        #inputing eqn
-        v1,v2,v3,v4 = 0,0,0,0
-        return v1,v2,v3,v4
+    #inputing eqn
+    v1,v2,v3,v4 = 0,0,0,0
+    return v1,v2,v3,v4
 
 
 # Apply to server for ID

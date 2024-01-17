@@ -1,8 +1,12 @@
 
 class WorldModel:
     def __init__(self):
-        """
-        init : setting the team color as your own team and some other default values
+        """_summary_
+            This function initialises the WorldModel.
+            The user will first have to input the team color
+            1 char will be recommended
+        Args:
+            isYellow: is a boolean to identify if our team is yellow or not.
         """
 
         self.team_color = input('team color : ')
@@ -11,20 +15,43 @@ class WorldModel:
         else:
             self.isYellow = False
         
+        # currently not used, but will be used in the future (maybe)
         self.ball_position = None
         self.our_robots = {} # Dictionary with robot IDs as keys and positions as values
         self.opponent_robots = {} # Similar structure for opponent robots
 
     def update_detection(self,detection):
+        """_summary_
+            This function is used to retrieve all "detection" data from ssl-vision-cli (terminal)
+        Params:
+            frameNum: gets the current frame number.
+            ball_position: sets ball's x,y position.
+            all_yellow : stores all yellow team robot ID and position.
+            all_blue : stores all blue team robot ID and position.
+        """
         self.frameNum = detection.frame_number
         #self.ball_data = detection.balls
         self.ball_position =  self.extract_ball_position(detection.balls)
         self.all_yellow = self.extract_all_robots_pos(detection.robots_yellow)
         self.all_blue = self.extract_all_robots_pos(detection.robots_blue)
         #print(self.all_yellow)
-        # change into receiving x y z data etc only
 
     def extract_ball_position(self, balls):
+        """_summary_
+        This function tries to read ball data from detection.data
+        since we will only be working with one ball, we will be keeping it as the following.
+        for every ball data encountered, we will store them in the tuple 
+        otherwise, if there was no ball data recieved at that frame,
+        it will be set as None.
+
+        Params:
+            ball: itinerable object
+            ball.x: that ball's x coordinates
+            ball.y: that ball's y coordinates
+
+        Returns:
+            ball_position: returns ball position as a tuple
+        """
         try:
             for ball in balls:
                 ball_position = (ball.x, ball.y)
@@ -37,8 +64,11 @@ class WorldModel:
             return ball_position
     
     def extract_all_robots_pos(self,robots):
-        """
-        break down the all robot positions and store them in a dictionary.
+        """_summary_
+            This funtion is used to break down a team's robot id and position, 
+            and store them in a new dictionary.
+        Returns:
+            dictionary : a dictionary of robots 
         """
         r = {}
         for robot in robots:
@@ -51,9 +81,14 @@ class WorldModel:
         return r
 
         
-
+    # working in progress
     def update_geometry(self,geometry):
-        print()
+        """_summary_
+            Retrieves data about the field
+        Args:
+            geometry (_type_): _description_
+        """
+        print("Nothing is here, working in progress")
 
     def update_ball_position(self, position):
         """

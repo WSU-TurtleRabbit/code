@@ -1,6 +1,10 @@
 
 class WorldModel:
     def __init__(self):
+        """
+        init : setting the team color as your own team and some other default values
+        """
+
         self.team_color = input('team color : ')
         if(self.team_color == 'y'):
             self.isYellow = True
@@ -33,6 +37,9 @@ class WorldModel:
             return ball_position
     
     def extract_all_robots_pos(self,robots):
+        """
+        break down the all robot positions and store them in a dictionary.
+        """
         r = {}
         for robot in robots:
             s = {}

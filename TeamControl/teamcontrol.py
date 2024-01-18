@@ -1,3 +1,5 @@
+from worldmodel import WorldModel
+
 import threading
 import time
 
@@ -22,12 +24,6 @@ class TeamControl:
 
         # Start the skill execution loop
         self.run_skill_loop()
-
-class WorldModel:
-    def update_loop(self):
-        while True:
-            print("WorldModel update")
-            time.sleep(3)
 
 # Example usage:
 world_model = WorldModel()

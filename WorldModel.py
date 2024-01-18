@@ -23,6 +23,8 @@ class WorldModel:
     def update_detection(self,detection):
         """_summary_
             This function is used to retrieve all "detection" data from ssl-vision-cli (terminal)
+        Args: 
+            detection: data about frames, robots and balls
         Params:
             frameNum: gets the current frame number.
             ball_position: sets ball's x,y position.
@@ -86,7 +88,7 @@ class WorldModel:
         """_summary_
             Retrieves data about the field
         Args:
-            geometry (_type_): _description_
+            geometry (data): data about field
         """
         print("Nothing is here, working in progress")
 
@@ -139,8 +141,9 @@ class WorldModel:
     # Additional methods can be added here to provide more functionality
     # like calculating distances between objects, checking for collisions, etc.
 
-    # Example usage:
+   
 world_model = WorldModel()
+# Example usage:
 # world_model.update_ball_position((100, 150))
 # world_model.update_robot_position(1, (50, 100), True) # Our team's robot
 # world_model.update_robot_position(3, (200, 250), False) # Opponent's robot

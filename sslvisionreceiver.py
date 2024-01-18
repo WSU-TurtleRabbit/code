@@ -1,5 +1,9 @@
 import sslclient
 #import os
+import threading
+import time
+import logging
+
 from WorldModel import world_model as w
 
 #serverip = os.popen('hostname -I').read().split(" ")[0]
@@ -24,5 +28,5 @@ while True:
         # updates the world model with received information
         w.update_detection(data.detection)
         # example if you want to get the robot position
-        print(w.get_robot_position(0,True))
+        #print(w.get_robot_position(0,True))
     

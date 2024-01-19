@@ -24,7 +24,7 @@ while True:
     
     # if we want to know about the robots and ball data
     if data.HasField('detection'):
-        #print("detection : ", data.detection) #debug
+        print("detection : ", data.detection) #debug
         # updates the world model with received information
         w.update_detection(data.detection)
         # example if you want to get the robot position

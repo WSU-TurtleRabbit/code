@@ -77,11 +77,13 @@ class RobotCli:
 
         
     ## This func. is design to calculate and move the robot accordingly
-    def move(self, vx, vy, w, rt):
-        v1,v2,v3,v4 = calculate(vx,vy,w)
-        endTime = time.time() + rt
-        while time.time() < endTime:
-            if not self.stop:
+    def move(self):
+        #gets the wheel vel data 
+        self.v1 = 0
+        self.v2 = 1
+        self.v3 = 1
+        self.v4 = 0
+        while not self.stop:
                 #set 4 wheel velocity and start moving
                 print(vx, vy, w, rt)
 
@@ -97,9 +99,17 @@ class RobotCli:
                 new_msg = self.b_id
             else:
                 try:
-                    vx, vy, w, rt = map(int, msg.split(",", 3))
-                    self.move(vx, vy, w, rt)
-                    new_msg = "Moving"
+                    # try to check the message 
+                    # the robot will be recieving the world and ball dictionary message
+                    world, ball = map(int, msg.split(",", 1))
+                    # first we wanted to know where the ball and robot is
+                    vx, vy, w = self.calculate_velocities(world, ball)
+
+                    # since all velocities are calculated, the ball will now move
+                    self.move()
+                    #  = map(int, msg.split(",", 3))
+                    # self.move(vx, vy, w, rt)
+                    # new_msg = "Moving"
                 except Exception as e:
                     print(e)
                     raise
@@ -120,18 +130,41 @@ class RobotCli:
             
         return id
 
-# calculates the 4 wheel Velocity
-def calculate(vx,vy,w):
-    #inputing eqn
-    v1,v2,v3,v4 = 0,0,0,0
-    return v1,v2,v3,v4
+    # calculates the velocity for the robot to get to ball.
+    def calculate_velocities(self, world, ball):
+        """_summary_
+        this function calculates the velocities 
+        by comparing world data to initial data
+        ARGS: 
+            world_x = Robot x and y coordinates in the world
+        """ 
+        print("")   
+        # self.x, self.y, self.o
 
+        #Using robtational matrix, adjust how the world precieves the ball
+        # and adjust the velocity and position accordingly 
+        # generates vx, vy, w.
 
-# Apply to server for ID
+        # apply rotational matrix
+        #
+
+        
+    def calculate_wheel_velocities(self,velocity_vector):
+        """_summary_
+            This function is used to calculate the 4 wheel velocity
+            with the [vx, vy, w]
+            applies the omniwheel eqn.
+        Args: 
+            velocity_vector : vector of [vx,vy,w]
+        """
+        
+        # calculate based on omniwheel equations 
+
+        self.w1, self.w2, self.w3, self.w4 =0,0,0,0
+
+# Apply to server for ID # this is not used
 def apply_id(server_addr):
-    id = 0
-    while id == 0:
-        print('hi')
+        print('do not use this function')
 
 
 Robot = RobotCli()

@@ -16,9 +16,21 @@ class WorldModel:
             self.isYellow = False
         
         # currently not used, but will be used in the future (maybe)
-        self.ball_position = None
-        self.our_robots = {} # Dictionary with robot IDs as keys and positions as values
-        self.opponent_robots = {} # Similar structure for opponent robots
+        # self.ball_position = None
+        # self.our_robots = {} # Dictionary with robot IDs as keys and positions as values
+        # self.opponent_robots = {} # Similar structure for opponent robots
+
+# working in progress
+    def update_geometry(self,geometry):
+        """_summary_
+            Retrieves data about the field
+        Args:
+            geometry (data): data about field
+        """
+        self.Field= geometry.field
+        print("Nothing is here, working in progress")
+
+
 
     def update_detection(self,detection):
         """_summary_
@@ -36,7 +48,7 @@ class WorldModel:
         self.ball_position =  self.extract_ball_position(detection.balls)
         self.all_yellow = self.extract_all_robots_pos(detection.robots_yellow)
         self.all_blue = self.extract_all_robots_pos(detection.robots_blue)
-        #print(self.all_yellow)
+        #print(self.all_yellow) #debug
 
     def extract_ball_position(self, balls):
         """_summary_
@@ -79,19 +91,11 @@ class WorldModel:
             s["y"] = robot.y
             s["o"] = robot.orientation
             r[str(robot.robot_id)] = s
-        print(r)
+        #print(r) #debug
         return r
 
         
-    # working in progress
-    def update_geometry(self,geometry):
-        """_summary_
-            Retrieves data about the field
-        Args:
-            geometry (data): data about field
-        """
-        print("Nothing is here, working in progress")
-
+    
     def update_ball_position(self, position):
         """
         Update the position of the ball.

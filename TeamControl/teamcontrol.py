@@ -1,5 +1,16 @@
+import sys
+import os
+
+# Addding the 'shared' and 'TeamControl' dirs to sys.path
+shared_dir = os.path.abspath('../shared')
+sys.path.append(shared_dir)
+
+teamcontrol_dir = os.path.abspath('../TeamControl')
+sys.path.append(teamcontrol_dir)
+
 from worldmodel import WorldModel
-from shared.action import Action
+from action import Action
+from skills.sampleskill import SampleSkill
 
 import threading
 import time
@@ -12,11 +23,15 @@ class TeamControl:
 
     def select_skill(self):
         # Logic to select the appropriate skill based on the world model
-        pass
+        self.current_skill = skills[0]
+        self.current_skill.initialise()
 
     def run_skill_loop(self):
-        while True:
+        self.select_skill()
+        while not self.current_skill.is_final():
             print("skill loop")
+            a = self.current_skill.execute()
+            # todo: now send this action to the robot
             time.sleep(5)  # Skill execution rate
 
     def start(self):
@@ -28,7 +43,8 @@ class TeamControl:
 
 # Example usage:
 world_model = WorldModel()
-skills = None
+skill1 = SampleSkill(world_model)
+skills = [skill1]
 tc = TeamControl(world_model, skills)
 tc.start()
 

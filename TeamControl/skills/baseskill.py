@@ -1,9 +1,13 @@
+from action import Action
+
 class BaseSkill:
     def __init__(self, world_model):
         self.states = {}
         self.current_state = None  # Initialize current state
         self.world_model = None
-
+        self.start_state = None
+        self.final_state = None
+        
     def add_state(self, state, function=None):
         """Adding states and associated function to the skill script."""
         self.states[state] = function
@@ -15,7 +19,15 @@ class BaseSkill:
 
     def get_state(self):
         """Return the current state"""
-        return self.current_state  
+        return self.current_state
+
+    def initialise(self):
+        self.set_state(self.start_state)
+
+    def is_final(self):
+        # check the current state is final;
+        # might be better to also check if final_state is defined
+        return self.current_state == self.final_state
 
     def transition_to(self,state):
         """Move from one sttae of the skill to the next state"""

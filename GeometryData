@@ -1,0 +1,179 @@
+geometry :  field {
+  field_length: 5030
+  field_width: 2755
+  goal_width: 1000
+  goal_depth: 180
+  boundary_width: 300
+  field_lines {
+    name: "TopTouchLine"
+    p1 {
+      x: -2515.0
+      y: 1377.5
+    }
+    p2 {
+      x: 2515.0
+      y: 1377.5
+    }
+    thickness: 10.0
+  }
+  field_lines {
+    name: "BottomTouchLine"
+    p1 {
+      x: -2515.0
+      y: -1377.5
+    }
+    p2 {
+      x: 2515.0
+      y: -1377.5
+    }
+    thickness: 10.0
+  }
+  field_lines {
+    name: "LeftGoalLine"
+    p1 {
+      x: -2515.0
+      y: -1377.5
+    }
+    p2 {
+      x: -2515.0
+      y: 1377.5
+    }
+    thickness: 10.0
+  }
+  field_lines {
+    name: "RightGoalLine"
+    p1 {
+      x: 2515.0
+      y: -1377.5
+    }
+    p2 {
+      x: 2515.0
+      y: 1377.5
+    }
+    thickness: 10.0
+  }
+  field_lines {
+    name: "HalfwayLine"
+    p1 {
+      x: 0.0
+      y: -1377.5
+    }
+    p2 {
+      x: 0.0
+      y: 1377.5
+    }
+    thickness: 10.0
+  }
+  field_lines {
+    name: "CenterLine"
+    p1 {
+      x: -2515.0
+      y: 0.0
+    }
+    p2 {
+      x: 2515.0
+      y: 0.0
+    }
+    thickness: 10.0
+  }
+  field_lines {
+    name: "LeftPenaltyStretch"
+    p1 {
+      x: -1515.0
+      y: -1000.0
+    }
+    p2 {
+      x: -1515.0
+      y: 1000.0
+    }
+    thickness: 10.0
+  }
+  field_lines {
+    name: "RightPenaltyStretch"
+    p1 {
+      x: 1515.0
+      y: -1000.0
+    }
+    p2 {
+      x: 1515.0
+      y: 1000.0
+    }
+    thickness: 10.0
+  }
+  field_lines {
+    name: "LeftFieldLeftPenaltyStretch"
+    p1 {
+      x: -2515.0
+      y: -1000.0
+    }
+    p2 {
+      x: -1515.0
+      y: -1000.0
+    }
+    thickness: 10.0
+  }
+  field_lines {
+    name: "LeftFieldRightPenaltyStretch"
+    p1 {
+      x: -2515.0
+      y: 1000.0
+    }
+    p2 {
+      x: -1515.0
+      y: 1000.0
+    }
+    thickness: 10.0
+  }
+  field_lines {
+    name: "RightFieldRightPenaltyStretch"
+    p1 {
+      x: 2515.0
+      y: -1000.0
+    }
+    p2 {
+      x: 1515.0
+      y: -1000.0
+    }
+    thickness: 10.0
+  }
+  field_lines {
+    name: "RightFieldLeftPenaltyStretch"
+    p1 {
+      x: 2515.0
+      y: 1000.0
+    }
+    p2 {
+      x: 1515.0
+      y: 1000.0
+    }
+    thickness: 10.0
+  }
+  field_arcs {
+    name: "CenterCircle"
+    center {
+      x: 0.0
+      y: 0.0
+    }
+    radius: 500.0
+    a1: 0.0
+    a2: 6.283185005187988
+    thickness: 10.0
+  }
+}
+calib {
+  camera_id: 0
+  focal_length: 621.5736694335938
+  principal_point_x: 313.88427734375
+  principal_point_y: 277.2579650878906
+  distortion: 1.809999942779541
+  q0: 0.9968000054359436
+  q1: 0.03743400052189827
+  q2: -0.01000600028783083
+  q3: -0.06992200016975403
+  tx: -99.9200210571289
+  ty: -566.2890014648438
+  tz: 3500.0
+  derived_camera_world_tx: 194.16912841796875
+  derived_camera_world_ty: -61.337772369384766
+  derived_camera_world_tz: 3541.068359375
+}

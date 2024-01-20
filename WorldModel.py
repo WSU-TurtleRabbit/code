@@ -15,6 +15,8 @@ class WorldModel:
         else:
             self.isYellow = False
         
+        #state
+        self.state = "UPDATE"
         # currently not used, but will be used in the future (maybe)
         # self.ball_position = None
         # self.our_robots = {} # Dictionary with robot IDs as keys and positions as values
@@ -66,6 +68,7 @@ class WorldModel:
         Returns:
             ball_position: returns ball position as a tuple
         """
+        ball_position = "No ball found"
         try:
             for ball in balls:
                 ball_position = (ball.x, ball.y)

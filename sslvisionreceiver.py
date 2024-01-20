@@ -13,8 +13,8 @@ c = sslclient.client(ip, port=10006) # connect to ssl-vision
 # Bind connection to port and IP for UDP Multicast
 c.connect()
 
-while True:
-    #received decoded package
+while w.state == "UPDATE":
+    #received decoded pyackage
     data = c.receive()
     
     # if we wanted to get the data about the field (whitelines)
@@ -24,7 +24,7 @@ while True:
     
     # if we want to know about the robots and ball data
     if data.HasField('detection'):
-        print("detection : ", data.detection) #debug
+        #print("detection : ", data.detection) #debug
         # updates the world model with received information
         w.update_detection(data.detection)
         # example if you want to get the robot position

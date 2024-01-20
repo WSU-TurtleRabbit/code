@@ -1,5 +1,6 @@
 import time
 
+
 class WorldModel:
     def __init__(self):
         """_summary_
@@ -22,9 +23,15 @@ class WorldModel:
         self.opponent_robots = {} # Similar structure for opponent robots
 
     def update_loop(self):
-        while True:
+
+        # the thing will be updated for 3s 
+        end = time.time()+3 
+        while time.time() < end:
             print("WorldModel update, currently doing noting. Please fix me.")
-            time.sleep(3)
+            self.state = "UPDATE"
+
+
+          
             
     def update_detection(self,detection):
         """_summary_
@@ -85,7 +92,7 @@ class WorldModel:
             s["y"] = robot.y
             s["o"] = robot.orientation
             r[str(robot.robot_id)] = s
-        print(r)
+        # print(r) #debug
         return r
 
         

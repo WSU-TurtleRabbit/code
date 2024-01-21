@@ -1,7 +1,7 @@
 import sys
 import os
 
-from WSUSSL.WorldModel.worldmodel import WorldModel
+from WSUSSL.World.model import Model as wm
 from WSUSSL.Shared.action import Action
 from WSUSSL.TeamControl.Skills.sampleskill import SampleSkill
 
@@ -36,7 +36,7 @@ class TeamControl:
 
 if __name__ == '__main__':
     # Example usage:
-    world_model = WorldModel()
+    world_model = wm()
     skill1 = SampleSkill(world_model)
     skills = [skill1]
     tc = TeamControl(world_model, skills)

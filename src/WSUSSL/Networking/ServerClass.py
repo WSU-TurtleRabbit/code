@@ -1,5 +1,6 @@
 import socket
 import os
+import sys
 import random
 import time
 
@@ -87,10 +88,9 @@ class Server:
 def create_sock():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     
-    #linux
-    #ip = os.popen('hostname -I').read().split(" ")[0]    
-    #Windows
-    #ip = socket.gethostbyname(socket.gethostname())
+    ip = socket.gethostbyname(socket.gethostname())
+    if sys.platform == 'posix':
+        ip = os.popen('hostname -I').read().split(" ")[0]
 
     binding = True
     while binding:

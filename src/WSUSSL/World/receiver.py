@@ -1,5 +1,5 @@
 import sslclient
-from WSUSSL.WorldModel.worldmodel import WorldModel as wm
+from WSUSSL.World.model import Model as wm
 
 ssl_vision_ip = "224.5.23.2" #ip connected to ssl-vision
 c = sslclient.client(ssl_vision_ip, port=10006) # connect to ssl-vision

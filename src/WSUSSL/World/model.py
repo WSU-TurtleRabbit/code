@@ -1,6 +1,6 @@
 import time
 
-class WorldModel:
+class Model:
     def __init__(self):
         """_summary_
             This function initialises the WorldModel.
@@ -45,7 +45,7 @@ class WorldModel:
         """
         self.frameNum = detection.frame_number
         #self.ball_data = detection.balls
-        self.ball_position =  self.extract_ball_position(detection.balls)
+        self.extract_ball_position(detection.balls)
         self.all_yellow = self.extract_all_robots_pos(detection.robots_yellow)
         self.all_blue = self.extract_all_robots_pos(detection.robots_blue)
         #print(self.all_yellow)
@@ -65,17 +65,17 @@ class WorldModel:
 
         Returns:
             ball_position: returns ball position as a tuple
+
+        __REMARKS__
+            This function only works with one ball on field
         """
-        try:
-            for ball in balls:
-                ball_position = (ball.x, ball.y)
-               # print("ball : ",ball_position)
-        except Exception as e :
-            print(e)
-            ball_position = None
-            #fix this ?
-        finally: 
-            return ball_position
+        self.ball_position = None
+        # if the field has at least 1 ball
+        for ball in balls:
+            # updates this module's ball position
+            self.ball_position = (ball.x, ball.y)
+            
+        #return self.ball_position
     
     def extract_all_robots_pos(self,robots):
         """_summary_
@@ -109,6 +109,7 @@ class WorldModel:
         Update the position of the ball.
         :param position: A tuple (x, y) representing the ball's position.
         """
+        print("Please do not use this")
         self.ball_position = position
 
     def update_robot_position(self, robot_id, position, is_our_team):

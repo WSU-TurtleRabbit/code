@@ -1,7 +1,7 @@
 import sys
 import os
 
-from WSUSSL.World.model import Model as wm
+from WSUSSL.World.receiver import update_world_model
 from WSUSSL.Shared.action import Action
 from WSUSSL.TeamControl.Skills.sampleskill import SampleSkill
 
@@ -13,6 +13,7 @@ class TeamControl:
         self.world_model = world_model
         self.skills = skills  # A collection of skills
         self.current_skill = None
+        self.update_world_model = update_world_model(world_model)
 
     def select_skill(self):
         # Logic to select the appropriate skill based on the world model
@@ -29,14 +30,15 @@ class TeamControl:
 
     def start(self):
         # Start the WorldModel update loop in a separate thread
-        threading.Thread(target=self.world_model.update_loop).start()
+        threading.Thread(target=self.update_world_model).start()
 
         # Start the skill execution loop
         self.run_skill_loop()
 
 if __name__ == '__main__':
+    from WSUSSL.World.model import Model as wm 
     # Example usage:
-    world_model = wm()
+    world_model = wm(isYellow=True)
     skill1 = SampleSkill(world_model)
     skills = [skill1]
     tc = TeamControl(world_model, skills)

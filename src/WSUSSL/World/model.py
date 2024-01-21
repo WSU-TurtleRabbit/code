@@ -1,7 +1,7 @@
 import time #we might want to have our own timer
 
 class Model:
-    def __init__(self):
+    def __init__(self, isYellow: bool):
         """_summary_
             This function initialises the WorldModel.
             The user will first have to input the team color
@@ -11,27 +11,18 @@ class Model:
         """
         # identifying whether using GRsim or SSLvision
 
-        # move this
-        self.team_color = input('team color : ')
-        if(self.team_color == 'y'):
-            self.isYellow = True
-        else:
-            self.isYellow = False
+        # self.team_color = input('team color : ')
+        # if(self.team_color == 'y'):
+        #     self.isYellow = True
+        # else:
+        #     self.isYellow = False
+
+        self.isYellow = isYellow
         
         # currently not used, but will be used in the future (maybe)
         self.ball_position = None
         self.our_robots = {} # Dictionary with robot IDs as keys and positions as values
         self.opponent_robots = {} # Similar structure for opponent robots
-
-    def update_loop(self):
-
-        # the thing will be updated for 3s 
-        end = time.time()+3 
-        while time.time() < end:
-            print("WorldModel update, currently doing noting. Please fix me.")
-            self.state = "UPDATE"
-
-
           
             
     def update_detection(self,detection):

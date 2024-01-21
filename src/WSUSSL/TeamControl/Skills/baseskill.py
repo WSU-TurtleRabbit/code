@@ -1,4 +1,4 @@
-from action import Action
+__all__ = []
 
 class BaseSkill:
     def __init__(self, world_model):

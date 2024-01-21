@@ -1,5 +1,11 @@
 .saves
 __pycache__
+
 bin/
 lib/
 pyenv.cfg
+
+*.egg-info
+
+.DS_Store
+._*

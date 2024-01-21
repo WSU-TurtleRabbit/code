@@ -1,16 +1,9 @@
 import sys
 import os
 
-# Addding the 'shared' and 'TeamControl' dirs to sys.path
-shared_dir = os.path.abspath('../shared')
-sys.path.append(shared_dir)
-
-teamcontrol_dir = os.path.abspath('../TeamControl')
-sys.path.append(teamcontrol_dir)
-
-from worldmodel import WorldModel
-from action import Action
-from skills.sampleskill import SampleSkill
+from WSUSSL.WorldModel.worldmodel import WorldModel
+from WSUSSL.Shared.action import Action
+from WSUSSL.TeamControl.Skills.sampleskill import SampleSkill
 
 import threading
 import time
@@ -41,10 +34,11 @@ class TeamControl:
         # Start the skill execution loop
         self.run_skill_loop()
 
-# Example usage:
-world_model = WorldModel()
-skill1 = SampleSkill(world_model)
-skills = [skill1]
-tc = TeamControl(world_model, skills)
-tc.start()
+if __name__ == '__main__':
+    # Example usage:
+    world_model = WorldModel()
+    skill1 = SampleSkill(world_model)
+    skills = [skill1]
+    tc = TeamControl(world_model, skills)
+    tc.start()
 

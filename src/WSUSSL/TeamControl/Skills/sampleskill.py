@@ -1,6 +1,6 @@
-from .baseskill import BaseSkill
+from WSUSSL.TeamControl.Skills.baseskill import BaseSkill
 import random
-from action import Action
+from WSUSSL.Shared.action import Action
 
 class SampleSkill(BaseSkill):
     def __init__(self, world_model):

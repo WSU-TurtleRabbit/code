@@ -1,6 +1,5 @@
 import time
 
-
 class WorldModel:
     def __init__(self):
         """_summary_

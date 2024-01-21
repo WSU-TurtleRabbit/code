@@ -1,4 +1,4 @@
-import time
+import time #we might want to have our own timer
 
 class Model:
     def __init__(self):
@@ -9,7 +9,9 @@ class Model:
         Args:
             isYellow: is a boolean to identify if our team is yellow or not.
         """
+        # identifying whether using GRsim or SSLvision
 
+        # move this
         self.team_color = input('team color : ')
         if(self.team_color == 'y'):
             self.isYellow = True

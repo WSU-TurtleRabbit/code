@@ -4,15 +4,15 @@ class BaseSkill:
     def __init__(self, world_model):
         self.states = {}
         self.current_state = None  # Initialize current state
-        self.world_model = None
+        self.world_model = world_model
         self.start_state = None
         self.final_state = None
         
-    def add_state(self, state, function=None):
+    def add_state(self, state: str, function: callable=None):
         """Adding states and associated function to the skill script."""
         self.states[state] = function
         
-    def set_state(self, state):
+    def set_state(self, state: str):
         if state not in self.states:
             raise ValueError("State not found in skill.")
         self.current_state = state  
@@ -27,7 +27,9 @@ class BaseSkill:
     def is_final(self):
         # check the current state is final;
         # might be better to also check if final_state is defined
-        return self.current_state == self.final_state
+        if not isinstance(self.final_state, callable):
+            return ValueError, f"self.final_state in skill {__class__} is not defined"
+        return self.current_state is self.final_state
 
     def transition_to(self,state):
         """Move from one sttae of the skill to the next state"""
@@ -46,6 +48,4 @@ class BaseSkill:
             state_function()
         else:
             raise NotImplementedError(f'Action for state {self.current_state} is not implemented')
-        
-
             

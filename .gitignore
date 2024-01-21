@@ -3,8 +3,7 @@ __pycache__
 
 bin/
 lib/
-pyenv.cfg
-
+pyvenv.cfg
 *.egg-info
 
 .DS_Store

@@ -7,13 +7,18 @@ import socket
 from grSim_Packet_pb2 import grSim_Packet
 from random_agent import RandomAgent
 from basic_agent import BasicAgent
+from follow_agent import FollowAgent
 import time
+from command_senders import grSimCommandSender, PhysicalRobotCommandSender
+
 
 class Simulation():
     def __init__(self, agents):
         self.agents = agents
         self.detection = {"ball": {"x": None, "y": None}, "robots_yellow": {}, "robots_blue": {}}
         self.geometry = {}
+        self.grSimSender = grSimCommandSender("127.0.0.1", 20011)
+        self.physicalRobotSender = PhysicalRobotCommandSender("172.20.10.14", 5005)
 
     # Main loop for receiving data from ssl-vision-client. Can be swapped for a UDP
     # server. 
@@ -44,9 +49,11 @@ class Simulation():
                 # Loop through the agents
                 for agent in self.agents:
                     # Retrieve desired velocities from each agent's act method
-                    result = agent.act(self.get_data())
+                    robot_id, vx, vy, vw = agent.act(self.get_data())
                     # Send desired velocities to send_command function
-                    self.send_command(*result)
+                    self.grSimSender.send_command(robot_id, vx, vy, vw, is_team_yellow=False)
+                    self.physicalRobotSender.send_command(vw, vx, vy)
+                    print(f"Real robot velocities: {vw}, {vx}, {vy}")
 
 
 
@@ -109,35 +116,10 @@ class Simulation():
                 
 
         
-    def send_command(self, robot_id, vx, vy, vw):
-        packet = grSim_Packet()
-        packet.commands.timestamp = 0.0
-        packet.commands.isteamyellow = False
-
-        command = packet.commands.robot_commands.add()
-        command.id = robot_id
-        command.kickspeedx = 0.0
-        command.kickspeedz = 0.0
-        command.veltangent = vx
-        command.velnormal = vy
-        command.velangular = vw
-
-        # Setting the required fields
-        command.spinner = False  
-        command.wheelsspeed = False  
-
-        message = packet.SerializeToString()
-
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(message, ('127.0.0.1', 20011))
-        
     
 
-agent1 = BasicAgent(0)
-agent2 = BasicAgent(1)
-agent3 = BasicAgent(2)
-agent4 = BasicAgent(3)
-agent5 = BasicAgent(4)
-agent6 = BasicAgent(5)
-sim = Simulation([agent1, agent2, agent3, agent4, agent5, agent6])
+
+follow_agent = FollowAgent(3)
+
+sim = Simulation([follow_agent])
 sim.run()

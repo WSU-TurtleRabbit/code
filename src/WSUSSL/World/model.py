@@ -96,6 +96,15 @@ class Model:
             geometry (data): data about field
         """
         print("Nothing is here, working in progress")
+        self.field = geometry.field
+        self.lines = extract_field_lines(geometry.field_lines)
+
+        
+    def extract_field_lines(self, lines):
+        for line in lines:
+            print("help")
+            
+
 
     def update_ball_position(self, position):
         """

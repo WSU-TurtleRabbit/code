@@ -19,8 +19,10 @@ def main():
                 case 3:
                     w = float(input("Please enter the value for omega(w): "))
                 case 4:
-                    print("Please enter the number for kicker operation")
-                    k = int(input("0. No  1. Yes"))
+                    k = 2 
+                    while k not in (0,1):
+                        print("Please enter the number for kicker operation")
+                        k = int(input("0. No  1. Yes"))
 
                 case 5:
                     d = float(input("Please enter dribbler speed"))

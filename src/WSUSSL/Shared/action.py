@@ -1,17 +1,29 @@
+
 class Action:
     def __init__(self, vx: float, vy: float, omega: float, kick: bool, dribble: float):
-        self.vx = float(vx)       # vx (m/s)
-        self.vy = float(vy)       # vy (m/2)
-        self.omega = float(omega) # angular velocity (rad/s)
-        self.kick = bool(kick)    # activate kicker
-        self.dribble = float(dribble) # -1 .. 1
+        """_summary_
+            Object for initialise action commands, encode / decode strings for UDP transportation.
+        Args:
+            vx (float): wanted velocity for x direction
+            vy (float): wanted velocity for y direction
+            omega (float): wanted angular velocity (radians)
+            kick (bool): wanted kicker to kick (Yes/No)
+            dribble (float): dribbling speed ? 
+        """
+        self.vx = vx
+        self.vy = vy
+        self.omega = omega
+        self.kick = kick
+        self.dribble = dribble
 
-    def calculate(self):
-        self.v1 = self.v2 = self.v3 = self.v4 = 0
-
-    def __call__(self):
-        self.calculate()
-        return self.v1, self.v2, self.v3, self.v4
+    @classmethod
+    def decode(cls): 
+        pass
+    
+    @classmethod
+    def encode(cls):
+        pass
 
     def __repr__(self):
-        return f"Action={__class__}(vx={self.vx}, vy={self.vy}, omega={self.omega}, kick={self.kick}, dribble={self.dribble})"
+        return f"Action: (vx: {self.vx}, vy: {self.vy}, theta: {self.omega}, kick: {self.kick}, dribble: {self.dribble})"
+    

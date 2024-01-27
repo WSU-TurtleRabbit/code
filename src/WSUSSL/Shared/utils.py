@@ -1,6 +1,6 @@
 #! /usr/bin/env -S python3 -B
 
-from Client.Shared.Action import Action
+from WSUSSL.Shared.action import Action
 
 #init
 vx,vy,w,k,d = 0,0,0,0,0

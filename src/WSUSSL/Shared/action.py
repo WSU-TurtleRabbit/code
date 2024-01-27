@@ -20,11 +20,10 @@ class Action:
         """_summary_
             Turns everything within the action class into a string
         Returns:
-            message(bytes): utf-8 string encoded action message for UDP transportation
+            message(string): string for send message to send
         """
         self.msg = f"{self.vx} {self.vy} {self.omega} {self.kick} {self.dribble}"
-        return self.msg.encode("utf-8")    
-
+        return self.msg
 
     @staticmethod
     def decode(msg):

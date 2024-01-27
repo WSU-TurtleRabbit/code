@@ -7,4 +7,4 @@ if __name__ ==  '__main__':
     # connect to other script (sending wm)
 
     server = Server()
-    server.send_message(interface())
+    server.send_message(interface(),"1")

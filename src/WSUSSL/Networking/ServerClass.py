@@ -25,7 +25,7 @@ class Server:
             server_addr = f"{self.ip}, {self.port}".encode()
 
             # Set the maximum number of robots you want to discover
-            max_robots_to_discover = 6
+            max_robots_to_discover = 1
 
             while len(ADDR) <= max_robots_to_discover:
                 print("Broadcasting info", server_addr)
@@ -80,17 +80,19 @@ class Server:
             finally:
                 print(f"Pinged Robot id: {id}, Alive = {status}")
 
-    def send_message(self, msg, addr):
+    def send_message(self, msg, id):
         #todo
-        self.sock.sendto(msg, addr)
+        msg = bytes(msg.encode('utf-8'))
+        self.sock.sendto(msg, ADDR[id])
         time.sleep(2)
 
 def create_sock():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     
-    ip = socket.gethostbyname(socket.gethostname())
-    if sys.platform == 'posix':
-        ip = os.popen('hostname -I').read().split(" ")[0]
+    # ip = socket.gethostbyname(socket.gethostname())
+    # if sys.platform == 'Linux':
+    ip = os.popen('hostname -I').read().strip().split(" ")[0]
+    
 
     binding = True
     while binding:

@@ -19,20 +19,16 @@ def main():
                 case 3:
                     w = float(input("Please enter the value for omega(w): "))
                 case 4:
-                    n = 0
-                    while n not in (1,2):                
-                        print("Please enter the number for kicker operation")
-                        n = int(input("1. Yes  2. No"))
-                        if (n == 1):
-                            k = True
-                        elif(n == 2):
-                            k = False
+                    print("Please enter the number for kicker operation")
+                    k = int(input("0. No  1. Yes"))
+
                 case 5:
                     d = float(input("Please enter dribbler speed"))
                 case 6: 
                     new_action = Action(vx,vy,w,k,d)
                     print(new_action, "has been created")
-                    return new_action
+                    msg = new_action.encode()
+                    return msg
                    
             
         except Exception:

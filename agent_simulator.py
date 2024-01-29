@@ -45,15 +45,14 @@ class Simulation():
             self.handle_field_frame(frame1)
             self.handle_player_frame(frame2)
             # Check if all robot data is in dictionaries
-            if self.is_ready():
-                # Loop through the agents
-                for agent in self.agents:
-                    # Retrieve desired velocities from each agent's act method
-                    robot_id, vx, vy, vw = agent.act(self.get_data())
-                    # Send desired velocities to send_command function
-                    self.grSimSender.send_command(robot_id, vx, vy, vw, is_team_yellow=False)
-                    self.physicalRobotSender.send_command(vw, vx, vy)
-                    print(f"Real robot velocities: {vw}, {vx}, {vy}")
+        if self.is_ready():
+            # Loop through the agents
+            for agent in self.agents:
+                # Retrieve desired velocities from each agent's act method
+                robot_id, vx, vy, vw = agent.act(self.get_data())
+                # Send desired velocities to send_command function
+                self.grSimSender.send_command(robot_id, vx, vy, vw, is_team_yellow=False)
+                print(f"Real robot velocities: {vw}, {vx}, {vy}")
 
 
 
@@ -119,7 +118,7 @@ class Simulation():
     
 
 
-follow_agent = FollowAgent(3)
+agent1 = BasicAgent(0)
 
-sim = Simulation([follow_agent])
+sim = Simulation([agent1])
 sim.run()

@@ -8,3 +8,4 @@ pyvenv.cfg
 
 .DS_Store
 ._*
+*.proto

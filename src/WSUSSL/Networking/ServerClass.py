@@ -69,7 +69,7 @@ class Server:
             try:
                 addr = ADDR[s_id]
                 while not status:
-                    self.sock.sendto(msg, addr)
+                    self.bsock.sendto(msg, addr)
                     data, addr = self.sock.recvfrom(1024)
                     info = data.decode()
                     print(info)

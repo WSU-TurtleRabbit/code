@@ -1,12 +1,12 @@
 import time #we might want to have our own timer
 
 class Model:
-    def __init__(self, isYellow: bool):
+    def __init__(self):
         """_summary_
             This function initialises the WorldModel.
             The user will first have to input the team color
             1 char will be recommended
-        Args:
+        Param:
             isYellow: is a boolean to identify if our team is yellow or not.
         """
         # identifying whether using GRsim or SSLvision
@@ -17,14 +17,15 @@ class Model:
         # else:
         #     self.isYellow = False
 
-        self.isYellow = isYellow
+        self.isYellow = None
         
         # currently not used, but will be used in the future (maybe)
         self.ball_position = None
         self.our_robots = {} # Dictionary with robot IDs as keys and positions as values
         self.opponent_robots = {} # Similar structure for opponent robots
           
-            
+
+    
     def update_detection(self,detection):
         """_summary_
             This function is used to retrieve all "detection" data from ssl-vision-cli (terminal)

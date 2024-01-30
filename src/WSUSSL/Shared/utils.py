@@ -3,15 +3,17 @@ from WSUSSL.Shared.action import Action
 
 def main():
     #init
-    vx,vy,w,k,d = 0,0,0,0,0
+    num,id,vx,vy,w,k,d = 0,0,0,0,0,0,0
 
     while True: 
         print("This is a debugger tool for testing action purposes")
         print("please select the number that you wanted to modify.")
         print("1. vx 2. vy 3. omega 4. kicker 5. dribbler 6. Done")
         try: 
-            num = int(input("Please Enter a number : "))
             match num:
+                case 0:
+                    while id not in range(1,6):
+                        id = int(input ("Please enter a Robot ID:"))
                 case 1:
                     vx = float(input("Please enter the value for vx : "))
                 case 2:
@@ -27,11 +29,10 @@ def main():
                 case 5:
                     d = float(input("Please enter dribbler speed"))
                 case 6: 
-                    new_action = Action(vx,vy,w,k,d)
+                    new_action = Action(id,vx,vy,w,k,d)
                     print(new_action, "has been created")
-                    msg = new_action.encode()
-                    return msg
-                   
+                    return new_action
+            num = int(input("Please Select an option : "))     
             
         except Exception:
             print("please input the correct values")

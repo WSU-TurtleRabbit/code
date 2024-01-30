@@ -1,15 +1,17 @@
 
 class Action:
-    def __init__(self, vx: float, vy: float, omega: float, kick: int, dribble: float):
+    def __init__(self, id:int, vx: float, vy: float, omega: float, kick: int, dribble: float):
         """_summary_
             Object for initialise action commands, encode / decode strings for UDP transportation.
         Args:
+            id (int) : wanted Robot ID
             vx (float): wanted velocity for x direction
             vy (float): wanted velocity for y direction
             omega (float): wanted angular velocity (radians)
             kick (int): wanted kicker to kick (0/1)
             dribble (float): dribbling speed ? 
         """
+        self.id = id
         self.vx = vx
         self.vy = vy
         self.omega = omega
@@ -22,7 +24,8 @@ class Action:
         Returns:
             message(string): string for send message to send
         """
-        self.msg = f"{self.vx} {self.vy} {self.omega} {self.kick} {self.dribble}"
+        self.msg = f"{self.id} {self.vx} {self.vy} {self.omega} {self.kick} {self.dribble}"
+        self.msg = bytes(self.msg.encode('utf-8'))
         return self.msg
 
     @staticmethod
@@ -35,12 +38,12 @@ class Action:
         Returns:
             Action (Object): new Action object Model for easier attribute access
         """
-        vx, vy, omega, kick, dribble = msg.decode().split(" ")
-        args = list(float(vx),float(vy),float(omega),int(kick),float(dribble))
+        id, vx, vy, omega, kick, dribble = msg.decode().split(" ")
+        args = list(int(id), float(vx),float(vy),float(omega),int(kick),float(dribble))
         return Action(*args)
         
     
     
     def __repr__(self): #debug msg
-        return f"Action: (vx: {self.vx}, vy: {self.vy}, theta: {self.omega}, kick: {self.kick}, dribble: {self.dribble})"
+        return f"Action: (id: {self.id} vx: {self.vx}, vy: {self.vy}, theta: {self.omega}, kick: {self.kick}, dribble: {self.dribble})"
     

@@ -13,48 +13,52 @@ TIME = time.strftime("%H:%M:%S", c)
 class Server:
 
     def __init__(self):
-        self.sock, self.ip, self.port = create_sock()
-        self.addr = ADDR["Server"]
-        self.broadcast()
+        self.sock, self.bsock, self.ip, self.port = create_sock()
+        self.find_robots()
 
-    def broadcast(self):
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as bsock:
-            bsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            bsock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    def find_robots(self):
+        """_summary_
+            This function is triggered after the server is created
+            This is used to broadcast and receives feedback from the robots
+        Params:
+        
+        """
+        
+        server_addr = f"{self.ip}, {self.port}".encode()
 
-            server_addr = f"{self.ip}, {self.port}".encode()
+        # Set the maximum number of robots you want to discover
+        max_robots_to_discover = 1
 
-            # Set the maximum number of robots you want to discover
-            max_robots_to_discover = 1
+        while len(ADDR) <= max_robots_to_discover:
+            print("Broadcasting info", server_addr)
 
-            while len(ADDR) <= max_robots_to_discover:
-                print("Broadcasting info", server_addr)
+            # Set the maximum time for broadcasting in seconds
+            max_broadcast_time = time.time()+10
 
-                # Set the maximum time for broadcasting in seconds
-                max_broadcast_time = 10
-                start_time = time.time()
+            while time.time()< max_broadcast_time:
+                # Broadcasting server Info @broadcasting port
+                self.bsock.sendto(server_addr, ('<broadcast>', 12342))
+                print("Broadcasting")
 
-                while time.time() - start_time < max_broadcast_time:
-                    # Broadcasting server Info @broadcasting port
-                    bsock.sendto(server_addr, ('<broadcast>', 12342))
-                    print("Broadcasting")
-                    time.sleep(2)
-
-                    try:
-                        # Set a timeout for receiving responses
-                        self.sock.settimeout(1)
-                        data, addr = self.sock.recvfrom(1024)
-                        robot_id = data.decode()
-                        print(f"Received RobotID: {robot_id} response from the address : {addr}")
-                        # Add/update the received data
-                        ADDR[robot_id] = addr
-                        LAST[robot_id] =TIME
-                        # Debug check
-                        print(ADDR)
-                        print(LAST)
-                    except socket.timeout:
-                        # Ignore timeouts and continue broadcasting
-                        pass
+                try:
+                    # Set a timeout for receiving responses
+                    self.sock.settimeout(1)
+                    data, addr = self.sock.recvfrom(1024)
+                    data = data.decode()
+                    # triggers id setup
+                    robot_id = assign_ID(addr)
+                    self.send_message(robot_id,robot_id)
+                    # robot_id = str(data.decode())
+                    # print(f"Received RobotID: {robot_id} response from the address : {addr}")
+                    # # Add/update the received data
+                    # ADDR[robot_id] = addr
+                    # LAST[robot_id] =TIME
+                    # # Debug check
+                    # print(ADDR)
+                    # print(LAST)
+                except socket.timeout:
+                    # Ignore timeouts and continue broadcasting
+                    pass
 
     def ping_all(self):
         msg = b'ping'
@@ -83,11 +87,22 @@ class Server:
     def send_message(self, msg, id):
         #todo
         msg = bytes(msg.encode('utf-8'))
-        self.sock.sendto(msg, ADDR[id])
+        self.sock.sendto(msg, ADDR[str(id)])
         time.sleep(2)
+    
+    def send_action(self, action):
+        robot_id = str(getattr(action, "id"))
+        addr = ADDR[robot_id]
+        self.sock.sendto(action.encode(),addr)
+        print("action sent")
+        
 
 def create_sock():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    
+    bsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    bsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    bsock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     
     # ip = socket.gethostbyname(socket.gethostname())
     # if sys.platform == 'Linux':
@@ -106,4 +121,26 @@ def create_sock():
         finally:
             ADDR["Server"] = sock.getsockname()
             print(ADDR["Server"])
-    return sock, ip, port
+    return sock, bsock, ip, port
+
+def assign_ID(addr):
+    print("Robot Connection Request Received")
+    isSetting = True
+    while isSetting:
+        print("Please enter the designated Robot id")
+        print("Current active ones are : ", ADDR)
+        try : 
+            id = int(input("Please Enter Robot id:"))
+            robot_id = str(id)
+            if id<= 6 and robot_id not in ADDR.keys():
+                isSetting = False
+                ADDR[robot_id] = addr
+                LAST[robot_id] = TIME
+                print(f"New Robot {ADDR[robot_id]} has been added at {LAST[robot_id]}")
+                return robot_id 
+            else : 
+                print("Try another ID")
+        except Exception:
+            print(Exception)
+            
+    return None

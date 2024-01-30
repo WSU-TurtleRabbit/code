@@ -140,7 +140,7 @@ def assign_ID(addr):
                 return robot_id 
             else : 
                 print("Try another ID")
-        except Exception:
-            print(Exception)
+        except Exception as e:
+            print(e)
             
     return None

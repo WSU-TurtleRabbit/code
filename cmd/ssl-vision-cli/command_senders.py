@@ -42,6 +42,9 @@ class PhysicalRobotCommandSender:
 
     def send_command(self, W, Vx, Vy):
         message = f"{W},{Vx},{Vy}".encode()
+        print (self.ip,self.port)
+        
+
         self.sock.sendto(message, (self.ip, self.port))
         time.sleep(self.send_rate)
 

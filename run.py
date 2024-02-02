@@ -7,6 +7,6 @@ if __name__ ==  '__main__':
     # call world.model wm
     world = wm()
     # connect to other script (sending wm)
-    server = Server()
+    server = Server(6)
     server.send_action(UI())
 1

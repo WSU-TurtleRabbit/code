@@ -51,6 +51,7 @@ class Simulation():
                 robot_id, vx, vy, vw = agent.act(self.get_data())
                 # Send desired velocities to send_command function
                 self.grSimSender.send_command(robot_id, vx, vy, vw, is_team_yellow=False)
+                self.physicalRobotSender.send_command(vw, vx, vy)
                 print(f"Real robot velocities: {vw}, {vx}, {vy}")
 
 

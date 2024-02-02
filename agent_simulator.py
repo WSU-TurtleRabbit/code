@@ -7,7 +7,6 @@ import socket
 from grSim_Packet_pb2 import grSim_Packet
 from random_agent import RandomAgent
 from basic_agent import BasicAgent
-from follow_agent import FollowAgent
 import time
 from command_senders import grSimCommandSender, PhysicalRobotCommandSender
 
@@ -52,6 +51,7 @@ class Simulation():
                 robot_id, vx, vy, vw = agent.act(self.get_data())
                 # Send desired velocities to send_command function
                 self.grSimSender.send_command(robot_id, vx, vy, vw, is_team_yellow=False)
+                self.physicalRobotSender.send_command(vw, vx, vy)
                 print(f"Real robot velocities: {vw}, {vx}, {vy}")
 
 
@@ -119,6 +119,11 @@ class Simulation():
 
 
 agent1 = BasicAgent(0)
+agent2 = BasicAgent(1)
+agent3 = BasicAgent(2)
+agent4 = BasicAgent(3)
+agent5 = BasicAgent(4)
+agent6 = BasicAgent(5)
 
-sim = Simulation([agent1])
+sim = Simulation([agent1, agent2, agent3, agent4, agent5, agent6])
 sim.run()

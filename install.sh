@@ -12,4 +12,7 @@
 
 # add "--user" to this if you don't have access to your computer's system-wide python packages.
 
+# windows
+#pip3 install -e .
+
 pip3 install --editable .

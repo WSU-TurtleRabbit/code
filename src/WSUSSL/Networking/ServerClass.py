@@ -63,9 +63,9 @@ class Server:
         self.bsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.bsock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         
-        # ip = socket.gethostbyname(socket.gethostname())
-        # if sys.platform == 'Linux':
-        self.ip = os.popen('hostname -I').read().strip().split(" ")[0]
+        self.ip = socket.gethostbyname(socket.gethostname()) #windows
+        if sys.platform == 'linux':
+            self.ip = os.popen('hostname -I').read().strip().split(" ")[0]
         
 
         bind_success = False
@@ -94,7 +94,7 @@ class Server:
             addr (tuple) : UDP address received (aka the client that sends the message)
         """
         
-        server = str(self.addr)
+        server = bytes(str(self.addr).encode('utf-8'))
 
         # Set the maximum number of robots you want to discover
 
@@ -231,4 +231,5 @@ class Server:
         addr = self.robots[robot_id]
         self.sock.sendto(action.encode(),addr)
         print("action sent")
+        
         

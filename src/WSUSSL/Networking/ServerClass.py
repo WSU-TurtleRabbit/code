@@ -27,7 +27,7 @@ class Server:
             robots (dict) : dictionary of robots and it's addresses
             active (dict) : dictionary of all robots last active time.
             max_robots (int) : int to decide on what is the maximum number of robots for the server to look for
-
+            gamestate (str) : the game state. (Can be replaced in the future)
         Functions: 
             0. creating it's own sockets
             1. broadcast to all robots
@@ -43,6 +43,7 @@ class Server:
         self.robots = dict()
         self.active = dict()
         self.max_robots = max_robots
+        self.gamestate = "ACTIVE"
         self.create_sock() # creates the sockets (UDP, Broadcast)
         self.find_robots() # looks for robots on the net using the 2 sockets
         
@@ -150,41 +151,48 @@ class Server:
         """
         # customised message : ping
         msg = b'ping'
-        
-        # looks for (6) robots
-        for i in range(6):
-            # default : false
-            status = False
-            robot_id = str(i+1)
-            try:
-                addr = self.robots[robot_id]
-                while not status:
-                    # sending using broadcast
-                    self.bsock.sendto(msg, addr)
-                    # receiving using UDP port
-                    data, addr = self.sock.recvfrom(1024)
-                    info = data.decode()
-                    print(info)
-                    status = True
-                    self.active[robot_id] = TIME
-            except socket.error as e:
-                print(f"Cannot connect Robot {robot_id}: {e}")
-                del self.robots[robot_id]
-                del self.active[robot_id]
-                # find robots again.
-            except Exception as e:
-                print(e)
-            finally:
-                print(f"Pinged Robot id: {robot_id}, Alive = {status}")
+        self.sock.settimeout(1)
+        while self.gamestate == "ACTIVE":
+            eTime = time.time()+10 # 10s after current time
+            for i in range(6):
+                robot_id = str(i+1)
+                last_active_time = self.active[robot_id]
+                print(last_active_time - TIME)
+                if last_active_time-TIME >= 5:
+                    # check if robot last seen time is larger than 5
+                    #sets status = False
+                    status = False
+                    # starts ping
+                    while time.time() < eTime and not status:
+                        try:
+                            self.send_message(msg,robot_id)
+                            data, addr = self.sock.recvfrom(1024)
+                            info = data.decode()
+                            print(info)
+                            status = True
+                        except socket.timeout:
+                            pass
+                        finally:
+                            print(f"Robot id : {robot_id} is Alive : {status}")
 
+                    if status == True:
+                        #updates last seen time
+                        self.active[robot_id] = TIME
+                        
+                    else: #remove robot from list
+                        del self.robots[robot_id]
+                        del self.active[robot_id]
+                        
+
+                
     def broadcast_all(self, msg: str):
-        endT = time.time() + 5
+        eTime = time.time() + 5
         all_received = False # bool for all robots being able to recieve the broadcast
         
         #message that needs to be broadcasted
         msg = bytes(msg.encode('utf-8'))
 
-        while time.time() < endT:
+        while time.time() < eTime:
             self.bsock.sendto(msg, ('<broadcast>', 12342))
             print("Broadcasting :", msg)
             
@@ -218,18 +226,26 @@ class Server:
                 pass
 
         
-    def send_message(self, msg, id):
-        #todo
+    # Try not to use this 
+    def send_message(self, msg:str, id:str):
+        """_summary_
+            This function sends direct message to a specific robot (id)
+        Args:
+            msg (str): message string
+            id (str): Robot ID in string
+        """
         msg = bytes(msg.encode('utf-8'))
+        # while not received, repeat 5 times
         self.sock.sendto(msg, self.robots[str(id)])
         time.sleep(2)
     
     def send_action(self, action: Action):
         # from action object, locate id
         robot_id = str(getattr(action, "id"))
-        # get the addresses of robot from server.robot dictionary
+        # From ID obtained, get it's address
         addr = self.robots[robot_id]
+        # sends the action to that robot
         self.sock.sendto(action.encode(),addr)
-        print("action sent")
+        print(f"{action} has been sent to Robot (ID) : {robot_id}")
         
         

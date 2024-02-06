@@ -44,6 +44,6 @@ class Action:
         
     
     
-    def __repr__(self): #debug msg
+    def __repr__(self): 
         return f"Action: (id: {self.id} vx: {self.vx}, vy: {self.vy}, theta: {self.omega}, kick: {self.kick}, dribble: {self.dribble})"
     

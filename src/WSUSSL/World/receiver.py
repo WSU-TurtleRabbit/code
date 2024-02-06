@@ -50,7 +50,7 @@ class proto2_grsim_py_receiver():
     def __init__(self, ip_addr, port):
         super().__init__(ip_addr, port)
 
-    def update_world_model(self, model):
+    def update_world_model(self, data):
         pass
 
 class proto2_grsim_py_generator():

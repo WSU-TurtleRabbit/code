@@ -33,7 +33,7 @@ def main(args):
             obs.printFullCords()
             allObs.append(obs)
 
-    utils = Utils(0,0,600,400)
+    utils = Utils(x_min=-5040/2,y_min=-2760/2,x_max=5040/2,y_max=2760/2) # Change this according to the field dimensions
 #    utils.setBoundaries(allObs, current, destination, 
 #                        x_margin = 50, y_margin = 10)
     x_min, y_min, x_max, y_max = utils.getBoundaries()

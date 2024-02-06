@@ -7,7 +7,6 @@ name = "WSUSSL"
 requires-python = ">=3.9"
 dependencies = [
     "numpy",
-    "sslclient"
 ]
 
 dynamic = [
@@ -18,4 +17,4 @@ dynamic = [
 where = ["src"]
 
 [tools.setuptools.dynamic]
-version = {attr = "TeamControl.__version__"}
+version = {attr = "WSUSSL.__version__"}

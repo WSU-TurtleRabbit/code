@@ -9,11 +9,13 @@ if __name__ ==  '__main__':
     # call world.model wm
     world_model = wm()
     world_receiver = receiver()
+    server = Server(1) 
+
+
     # connect to other script (sending wm)
     world_receiver.set_world_model(world_model)
     while True:
         world_receiver.listen()
         
 
-        server = Server(1)
         server.send_action(go_to_ball(world_model,6))

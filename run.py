@@ -16,4 +16,4 @@ if __name__ ==  '__main__':
         
 
         server = Server(1)
-        server.send_action(go_to_ball(world_model))
+        server.send_action(go_to_ball(world_model,6))

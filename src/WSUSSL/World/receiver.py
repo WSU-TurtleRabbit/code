@@ -13,30 +13,56 @@ class proto2_ssl_receiver:
             ip_addr (str): address of the software's UDP
             port (int): port number of the software's UDP
         Params:
-            client(socket): the UDP socket that connects to software
+            sock(socket): the UDP socket that connects to software
             model(world_model):
         """
         self.ip_addr = ip_addr
         self.port = port
-        self.client = None
-        self.model = None
+        self.sock = None
+        #self.model = model
         self.connect() # connects to the socket
-
+        
     def connect(self):
-        """Connect self to the socket
-        """
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.client.bind((self.ip_addr, self.port))
+            """Binds the sock with ip and port and configure to UDP multicast."""
+
+            if not isinstance(self.ip_addr, str):
+                raise ValueError('IP type should be string type')
+            if not isinstance(self.port, int):
+                raise ValueError('Port type should be int type')
+            
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+            self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 128)
+            self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
+            self.sock.bind((self.ip_addr, self.port))
+
+            host = socket.gethostbyname(socket.gethostname())
+            self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_IF, socket.inet_aton(host))
+            self.sock.setsockopt(socket.SOL_IP, socket.IP_ADD_MEMBERSHIP, 
+                    socket.inet_aton(self.ip_addr) + socket.inet_aton(host))
+            
+    def receive(self):
+        """Receive package and decode."""
+
+        data, _ = self.sock.recvfrom(1024)
+        decoded_data = ssl_vision_wrapper_pb2.SSL_WrapperPacket().FromString(data)
+        return decoded_data
+    # def connect(self):
+    #     """Connect self to the socket
+    #     """
+    #     print(self.ip_addr, self.port)
+    #     self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    #     #self.sock.bind((self.ip_addr, self.port))
 
     def listen(self):
-        # if self.client is None:
-        #     raise UserWarning('connect() needs to be called before listen()')
+        if self.sock is None:
+             raise UserWarning('connect() needs to be called before listen()')
         
         if not isinstance(self.model, wm):
             raise TypeError(f'expected world_model, got {self.model.__class__}')
         
         while True:
-            data, addr = self.client.recvfrom(1024)
+            data = self.receive()
             self.update_world_model(data)
     
     def update_world_model(self, data):
@@ -66,14 +92,14 @@ class proto2_ssl_vision_py_receiver(proto2_ssl_receiver):
         Args:
             data: data recieved from ssl-vision
         """
-        ssl_vision_wrapper = ssl_vision_wrapper_pb2.SSL_WrapperPacket()
-        wrapper = ssl_vision_wrapper.FromString(data)
 
-        if wrapper.HasField('detection'):
-            self.model.update_detection(wrapper.detection)
+        if data.HasField('detection'):
+            self.model.update_detection(data.detection)
+            print(data.detection)
 
-        if wrapper.HasField('geometry'):
-            self.model.update_detection(data.geometry)
+        if data.HasField('geometry'):
+            self.model.update_geometry(data.geometry)
+            print(data.geometry)
 
 class proto2_grsim_py_receiver():
     def __init__(self, ip_addr, port):
@@ -128,7 +154,7 @@ class proto2_grsim_py_generator():
             timestamp, isteamyellow, robot_commands
         )
     
-if __name__ == '__main__':
-    recv = proto2_ssl_vision_py_receiver('127.0.0.1', 50514) #e.g.
+#if __name__ == '__main__':
+    #recv = proto2_ssl_vision_py_receiver('127.0.0.1', 50514) #e.g.
     #recv.connect() 
     #recv.update_world_model()

@@ -98,7 +98,7 @@ class Model:
         """
         print("Nothing is here, working in progress")
         self.field = geometry.field
-        self.lines = extract_field_lines(geometry.field_lines)
+        #self.lines = extract_field_lines(geometry.field_lines)
 
         
     def extract_field_lines(self, lines):

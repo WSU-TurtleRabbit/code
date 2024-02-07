@@ -4,6 +4,7 @@ from WSUSSL.World.proto2 import grSim_Commands_pb2
 from WSUSSL.World.model import Model as wm # in short of world_model
 
 import socket
+import time
 
 class proto2_ssl_receiver:
     def __init__(self, ip_addr: str, port: int):
@@ -60,8 +61,8 @@ class proto2_ssl_receiver:
         
         if not isinstance(self.model, wm):
             raise TypeError(f'expected world_model, got {self.model.__class__}')
-        
-        while True:
+        endT = time.time()+1
+        while time.time()< endT:
             data = self.receive()
             self.update_world_model(data)
     

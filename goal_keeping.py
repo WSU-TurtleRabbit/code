@@ -47,7 +47,9 @@ def plot_trajectory_w_goal(trajectory, ball_positions_x, ball_positions_y, inter
                              passes through the goal line
             intersection_point: point (x,y) where the ball intersection with the goal line.
             direction_info: String with information whether the ball is moving towards 
-                            the goal, away from the goal or perpendicular to the goal.
+                            our goal, away from our goal or perpendicular to our goal.
+        output:
+            None
     '''
     # Plot trajectory
     plt.plot([pos[0] for pos in trajectory], [pos[1] for pos in trajectory], label="Trajectory")
@@ -96,6 +98,11 @@ def predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number,
             ball_positions_y: y coordinates (in world coordinate system) of the detected ball
             current_frame_number: current frame number
             num_samples: number of samples that should be used to estimate the trajectory
+        output:
+            trajectory_y_at_goal_line: y value where the estimated trajectory intersects
+                                       the goal line.
+            direction_info: String with information whether the ball is moving towards 
+                            our goal, away from our goal or perpendicular to our goal.
     '''
     # Ensure we have at least two points to fit a line
     if len(ball_positions_x) < 2:
@@ -139,6 +146,31 @@ def predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number,
     else:
         direction_info = "Moving perpendicular to the goal"
 
+    # x-coordinate of the goal side
+    if TEAM_YELLOW:
+        goal_side_x = -FIELD_LENGTH/2
+    else:
+        goal_side_x = -FIELD_LENGTH/2
+    
+    # Find the y-values of the trajectory at the goal line x-coordinate
+    trajectory_y_at_goal_line = model.predict(poly_features.transform(np.array([goal_side_x]).reshape(-1, 1)))
+
+    return list(zip(x_values, y_values)), direction_info, trajectory_y_at_goal_line
+
+
+def goal_intersection(trajectory_y_at_goal_line):
+    '''
+        This function checks whether the estimates ball trajectory goal through the goal 
+        and whether the ball is moving towards the goal at all.
+
+        input:
+            trajectory_y_at_goal_line: y value where the estimated trajectory intersects
+                                       the goal line.
+        output:
+            intersects_line: bool value providing information whether the ball trajectory
+                             passes through the goal line
+            intersection_point: point (x,y) where the ball intersection with the goal line.
+    '''
     # x-coordinate of the goal line
     if TEAM_YELLOW:
         goal_line_x = -FIELD_LENGTH/2
@@ -148,10 +180,7 @@ def predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number,
     # y-coordinate of the goal line
     goal_line_y_min = -GOAL_WIDTH / 2
     goal_line_y_max = GOAL_WIDTH / 2
-    
-    # Find the y-values of the trajectory at the goal line x-coordinate
-    trajectory_y_at_goal_line = model.predict(poly_features.transform(np.array([goal_line_x]).reshape(-1, 1)))
-    
+
     # Check if the y-value of the trajectory at the goal line x-coordinate is within the goal line y-range
     intersects_line = goal_line_y_min <= trajectory_y_at_goal_line <= goal_line_y_max
     
@@ -160,10 +189,7 @@ def predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number,
     if intersects_line:
         intersection_point = (goal_line_x, round(trajectory_y_at_goal_line.item()))
 
-    return list(zip(x_values, y_values)), intersects_line, intersection_point, direction_info
-
-def check_goal_intersection():
-    pass
+    return intersects_line, intersection_point
 
 def predict_trajectory_moving(ball_positions_x, ball_positions_y, current_frame_number, num_samples):
     # Predict ball trajectory when a robot is at the ball but has not kicked yet
@@ -187,11 +213,14 @@ def main():
         current_frame_number = 5  # Current frame number
         num_samples = 3 # number of frames to use to estimate the trajectory
 
-        trajectory, intersects_line, intersection_point, direction_info = predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number, num_samples)
+        # estimate the trajectory of the moving ball
+        trajectory, direction_info, trajectory_y_at_goal_line = predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number, num_samples)
+        # check whether the estimated ball trajectory intersects with the goal line
+        intersects_line, intersection_point = goal_intersection(trajectory_y_at_goal_line)
 
         plot_trajectory_w_goal(trajectory, ball_positions_x, ball_positions_y, intersects_line, intersection_point, direction_info)
 
-        
+        # Next step: make the goalie acts based on the fact whether the estimated ball trajectory intersects the ball line
 
 if __name__ == '__main__':
     main()

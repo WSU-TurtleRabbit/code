@@ -33,7 +33,58 @@ FIELD_WIDTH = 2760 #mm
 FIELD_LENGTH = 5040 #mm
 TEAM_YELLOW = True
 
-def predict_trajectory_moving(ball_positions_x, ball_positions_y, current_frame_number, num_samples):
+def plot_trajectory_w_goal(trajectory, ball_positions_x, ball_positions_y, intersects_line, intersection_point, direction_info):
+    '''
+        This function plots the trajectory, the goal field and whether there is an 
+        intersection or not and the direction of the ball movement. All coodinates
+        are in the field coordinate system and have the unit milimeters.
+
+        input:
+            trajectory: set of x and y values for the estimated trajectory
+            ball_positions_x: x values of the observed ball positions
+            ball_positions_y: y values of the observed ball positions
+            intersects_line: bool value providing information whether the ball trajectory
+                             passes through the goal line
+            intersection_point: point (x,y) where the ball intersection with the goal line.
+            direction_info: String with information whether the ball is moving towards 
+                            the goal, away from the goal or perpendicular to the goal.
+    '''
+    # Plot trajectory
+    plt.plot([pos[0] for pos in trajectory], [pos[1] for pos in trajectory], label="Trajectory")
+
+    # Plot ball positions
+    plt.scatter(ball_positions_x, ball_positions_y, color='orange', label='Ball Positions')
+
+    # Plot the vertical goal line x = -5040/2
+    plt.axvline(x=-FIELD_LENGTH/2, color='r', linestyle='--', label="Goal Line")
+
+    # Plot the goal area as a rectangle
+    plt.fill_between([-FIELD_LENGTH/2, -FIELD_LENGTH/2 + 200], -GOAL_WIDTH/2, GOAL_WIDTH/2, color='r', alpha=0.1, label="Goal Area")
+
+    # Check if trajectory intercepts the line and display result
+    if intersects_line:
+        plt.text(+100, -1000, f'Intersects Goal Line at\n{str(intersection_point)}\n{direction_info}', color='r', fontsize=10)  # Adjusted text position
+        # Plot intersection point
+        if intersection_point is not None:
+            plt.scatter(*intersection_point, color='red', label='Intersection Point')
+    else:
+        plt.text(+100, -1000, 'Does Not Intersect Goal Line', color='g', fontsize=10)  # Adjusted text position
+
+    # Add direction information
+    plt.text(-4500, -1500, f'Direction: {direction_info}', color='white', fontsize=10)  # Adjusted text position
+
+    # Plot settings
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.title('Ball Trajectory and Goal Line Intersection')
+    plt.legend()
+    plt.grid(True)
+    plt.xlim(-FIELD_LENGTH/2, FIELD_LENGTH/2)  # Adjusted x range
+    plt.ylim(-FIELD_WIDTH/2, FIELD_WIDTH/2)  # Adjusted y range
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.show()
+
+def predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number, num_samples):
     '''
         This function takes are input a list of ball positions and uses the last 5 ball positions
         to fit a ball trajectory by applying a linear regression model. We then check whether this
@@ -138,40 +189,9 @@ def main():
 
         trajectory, intersects_line, intersection_point, direction_info = predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number, num_samples)
 
-        # Plot trajectory
-        plt.plot([pos[0] for pos in trajectory], [pos[1] for pos in trajectory], label="Trajectory")
+        plot_trajectory_w_goal(trajectory, ball_positions_x, ball_positions_y, intersects_line, intersection_point, direction_info)
 
-        # Plot ball positions
-        plt.scatter(ball_positions_x, ball_positions_y, color='orange', label='Ball Positions')
-
-        # Plot the vertical goal line x = -5040/2
-        plt.axvline(x=-FIELD_LENGTH/2, color='r', linestyle='--', label="Goal Line")
-
-        # Plot the goal area as a rectangle
-        plt.fill_between([-FIELD_LENGTH/2, -FIELD_LENGTH/2 + 200], -GOAL_WIDTH/2, GOAL_WIDTH/2, color='r', alpha=0.1, label="Goal Area")
-
-        # Check if trajectory intercepts the line and display result
-        if intersects_line:
-            plt.text(+100, -1000, f'Intersects Goal Line at\n{str(intersection_point)}\n{direction_info}', color='r', fontsize=10)  # Adjusted text position
-            # Plot intersection point
-            if intersection_point is not None:
-                plt.scatter(*intersection_point, color='red', label='Intersection Point')
-        else:
-            plt.text(+100, -1000, 'Does Not Intersect Goal Line', color='g', fontsize=10)  # Adjusted text position
-
-        # Add direction information
-        plt.text(-4500, -1500, f'Direction: {direction_info}', color='white', fontsize=10)  # Adjusted text position
-
-        # Plot settings
-        plt.xlabel('X')
-        plt.ylabel('Y')
-        plt.title('Ball Trajectory and Goal Line Intersection')
-        plt.legend()
-        plt.grid(True)
-        plt.xlim(-FIELD_LENGTH/2, FIELD_LENGTH/2)  # Adjusted x range
-        plt.ylim(-FIELD_WIDTH/2, FIELD_WIDTH/2)  # Adjusted y range
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.show()
+        
 
 if __name__ == '__main__':
     main()

@@ -9,6 +9,8 @@ def turn_to_ball(ball_position, epsilon=0.15):
 
         input: 
             ball_position: ball position in the robot coordinate systen (e.g. (10mm,50mm))
+            epsilon: Threshold for the orientation (orientation does not have to be zero to 
+                     consider it correct -> avoids jitter)
     '''
     if ball_position:
         orientation_to_ball = np.arctan2(ball_position[0], ball_position[1])

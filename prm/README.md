@@ -16,7 +16,10 @@ PRM was choosen since it is probabilistically complete and in a small map like t
 "You are given as input the current and target coordinates of a robot, as well as the top left and bottom right points of rectangular obstacles."
 
 # Modifications
+Both the PRMController.py code was modified and the old main.py script was replaced with an adapted main_adapted.py script. 
 - Changed to code so there is no need for the environment.txt file but the positions can be used directly from SSL vision
 - Commented out code for plots and prints
 - The shortestPath function now returns the way points and the distance
 - The next way point will be used as the new target for the moving robot
+
+

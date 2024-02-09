@@ -1,4 +1,4 @@
-# Original README
+# Excerpt from original README
 Testing the prm path planner from https://github.com/KaleabTessera/PRM-Path-Planning
 
 ## Steps of algorithm

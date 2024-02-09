@@ -27,9 +27,9 @@ def main():
     target_position = [1000,-300]
 
     other_robots = [[-1499, 0],
-                    [-549, 1000],
+                    [-549, 1100],
                     [-2499, -250],
-                    [-3599, 400]]
+                    [199, 800]]
 
     # Set obstacles
     allObs = []
@@ -48,16 +48,30 @@ def main():
 
     # run path planner code
     prm = PRMController(numSamples, allObs, active_robot_position, target_position)
-    prm.setBoundaries(x_min, y_min, x_max, y_max)
-    # Initial random seed to try
-    initialRandomSeed = 0
-    pointsToEnd, dist = prm.runPRM(initialRandomSeed)
 
-    # pointsToEnd[0] = current position, pointsToEnd[1] = next target position as input for go_to_target function
-    new_target_point = pointsToEnd[1]
+    # check whether the direct path from the current position to the target is obstructed
+    if not (prm.checkLineCollision(active_robot_position, target_position)):
+        new_target_point = target_position
 
-    print(new_target_point, dist)
+        # # JUST TO COMPARE REMOVE LATER
+        # prm.setBoundaries(x_min, y_min, x_max, y_max)
+        # # Initial random seed to try
+        # initialRandomSeed = 0
+        # # pointsToEnd, dist = prm.runPRM(initialRandomSeed) # distance not used yet
+        # pointsToEnd, _ = prm.runPRM(initialRandomSeed)
 
+        # print("Use direct path")
+    else:
+        prm.setBoundaries(x_min, y_min, x_max, y_max)
+        # Initial random seed to try
+        initialRandomSeed = 0
+        # pointsToEnd, dist = prm.runPRM(initialRandomSeed) # distance not used yet
+        pointsToEnd, _ = prm.runPRM(initialRandomSeed)
+
+        # pointsToEnd[0] = current position, pointsToEnd[1] = next target position as input for go_to_target function
+        new_target_point = pointsToEnd[1]
+
+    print(new_target_point)
 
 if __name__ == '__main__':
     main()

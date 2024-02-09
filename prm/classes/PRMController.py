@@ -11,6 +11,8 @@ import shapely.geometry
 from .Dijkstra import Graph, dijkstra, to_array
 from .Utils import Utils
 
+PLOTTING = False
+
 
 class PRMController:
     def __init__(self, numOfRandomCoordinates, allObs, current, destination,
@@ -63,7 +65,9 @@ class PRMController:
 
         # if(saveImage):
         #     plt.savefig("{}_samples.png".format(self.numOfCoords))
-        # plt.show()
+        if PLOTTING:
+            plt.plot([self.current[0][0], self.destination[0][0]], [self.current[0][1], self.destination[0][1]], c="red", linewidth=4.0)
+            plt.show()
 
         return pointsToEnd, dist
 
@@ -90,7 +94,8 @@ class PRMController:
                 else:
                     self.collisionFreePoints = np.vstack(
                         [self.collisionFreePoints, point])
-        #self.plotPoints(self.collisionFreePoints)
+        if PLOTTING:
+            self.plotPoints(self.collisionFreePoints)
 
     def findNearestNeighbour(self, k=5):
         X = self.collisionFreePoints
@@ -113,9 +118,11 @@ class PRMController:
                         b = str(self.findNodeIndex(neighbour))
                         self.graph.add_node(a)
                         self.graph.add_edge(a, b, distances[i, j+1])
-                        #x = [p[0], neighbour[0]]
-                        #y = [p[1], neighbour[1]]
-                        #plt.plot(x, y)
+
+                        if PLOTTING:
+                            x = [p[0], neighbour[0]]
+                            y = [p[1], neighbour[1]]
+                            plt.plot(x, y)
 
     def shortestPath(self):
         '''
@@ -134,15 +141,16 @@ class PRMController:
         else:
             return None, None
 
-        ## Plotting shorest path
-        #pointsToDisplay = [(self.findPointsFromNode(path))
-        #                   for path in pathToEnd]
-        #
-        #x = [int(item[0]) for item in pointsToDisplay]
-        #y = [int(item[1]) for item in pointsToDisplay]
-        #plt.plot(x, y, c="blue", linewidth=3.5)
+        if PLOTTING:
+            # Plotting shorest path
+            pointsToDisplay = [(self.findPointsFromNode(path))
+                              for path in pathToEnd]
+            
+            x = [int(item[0]) for item in pointsToDisplay]
+            y = [int(item[1]) for item in pointsToDisplay]
+            plt.plot(x, y, c="blue", linewidth=3.5)
 
-        pointsToEnd = [str(self.findPointsFromNode(path))
+        pointsToEnd = [(self.findPointsFromNode(path))
                        for path in pathToEnd]
 
         # print("The quickest path from {} to {} is: \n {} \n with a distance of {}".format(
@@ -165,13 +173,14 @@ class PRMController:
                     uniqueCords)
                 if(line.intersection(wall)):
                     collision = True
+                    return collision
             else:
                 obstacleShape = shapely.geometry.Polygon(
                     obs.allCords)
-                collision = line.intersects(obstacleShape)
-            if(collision):
-                return True
-        return False
+                if (line.intersects(obstacleShape)):
+                    collision = True
+                    return collision
+        return collision
 
     def findNodeIndex(self, p):
         return np.where((self.collisionFreePoints == p).all(axis=1))[0][0]

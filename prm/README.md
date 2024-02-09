@@ -21,5 +21,7 @@ Both the PRMController.py code was modified and the old main.py script was repla
 - Commented out code for plots and prints
 - The shortestPath function now returns the way points and the distance
 - The next way point will be used as the new target for the moving robot
+- Slightly improved the CheckLinieCollision function
+- Check whether the direct path is obstructed if now use the target position as the next target for the robot to go to
 
 

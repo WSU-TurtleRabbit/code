@@ -7,7 +7,6 @@ from matplotlib.patches import Rectangle
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 import shapely.geometry
-import argparse
 
 from .Dijkstra import Graph, dijkstra, to_array
 from .Utils import Utils
@@ -35,7 +34,7 @@ class PRMController:
         self.y_min = y_min
         self.y_max = y_max
         
-    def runPRM(self, initialRandomSeed, saveImage=True):
+    def runPRM(self, initialRandomSeed, saveImage=False):
         seed = initialRandomSeed
         # Keep resampling if no solution found
         N = 0
@@ -56,15 +55,17 @@ class PRMController:
             self.findNearestNeighbour()
 
             # Search for shortest path from start to end node - Using Dijksta's shortest path alg
-            self.shortestPath()
+            pointsToEnd, dist = self.shortestPath()
 
             seed = np.random.randint(1, 100000)
             self.coordsList = np.array([])
             self.graph = Graph()
 
-        if(saveImage):
-            plt.savefig("{}_samples.png".format(self.numOfCoords))
-        plt.show()
+        # if(saveImage):
+        #     plt.savefig("{}_samples.png".format(self.numOfCoords))
+        # plt.show()
+
+        return pointsToEnd, dist
 
     def genCoords(self):
         X = np.random.randint(self.x_min, self.x_max, 
@@ -89,7 +90,7 @@ class PRMController:
                 else:
                     self.collisionFreePoints = np.vstack(
                         [self.collisionFreePoints, point])
-        self.plotPoints(self.collisionFreePoints)
+        #self.plotPoints(self.collisionFreePoints)
 
     def findNearestNeighbour(self, k=5):
         X = self.collisionFreePoints
@@ -112,11 +113,15 @@ class PRMController:
                         b = str(self.findNodeIndex(neighbour))
                         self.graph.add_node(a)
                         self.graph.add_edge(a, b, distances[i, j+1])
-                        x = [p[0], neighbour[0]]
-                        y = [p[1], neighbour[1]]
-                        plt.plot(x, y)
+                        #x = [p[0], neighbour[0]]
+                        #y = [p[1], neighbour[1]]
+                        #plt.plot(x, y)
 
     def shortestPath(self):
+        '''
+            This function calculates the way point for the shortest path and returns 
+            both those points and the distance to the end node in milimeters.
+        '''
         self.startNode = str(self.findNodeIndex(self.current))
         self.endNode = str(self.findNodeIndex(self.destination))
 
@@ -127,27 +132,28 @@ class PRMController:
         if(len(pathToEnd) > 1):
             self.solutionFound = True
         else:
-            return
+            return None, None
 
-        # Plotting shorest path
-        pointsToDisplay = [(self.findPointsFromNode(path))
-                           for path in pathToEnd]
-
-        x = [int(item[0]) for item in pointsToDisplay]
-        y = [int(item[1]) for item in pointsToDisplay]
-        plt.plot(x, y, c="blue", linewidth=3.5)
+        ## Plotting shorest path
+        #pointsToDisplay = [(self.findPointsFromNode(path))
+        #                   for path in pathToEnd]
+        #
+        #x = [int(item[0]) for item in pointsToDisplay]
+        #y = [int(item[1]) for item in pointsToDisplay]
+        #plt.plot(x, y, c="blue", linewidth=3.5)
 
         pointsToEnd = [str(self.findPointsFromNode(path))
                        for path in pathToEnd]
-        print("****Output****")
 
-        print("The quickest path from {} to {} is: \n {} \n with a distance of {}".format(
-            self.collisionFreePoints[int(self.startNode)],
-            self.collisionFreePoints[int(self.endNode)],
-            " \n ".join(pointsToEnd),
-            str(dist[self.endNode])
-        )
-        )
+        # print("The quickest path from {} to {} is: \n {} \n with a distance of {}".format(
+        #     self.collisionFreePoints[int(self.startNode)],
+        #     self.collisionFreePoints[int(self.endNode)],
+        #     " \n ".join(pointsToEnd),
+        #     str(dist[self.endNode])
+        # )
+        # )
+
+        return pointsToEnd, int(dist[self.endNode])
 
     def checkLineCollision(self, start_line, end_line):
         collision = False

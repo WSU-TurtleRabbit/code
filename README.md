@@ -26,3 +26,12 @@ Check out the explanation of the coordinate system transformation in the [wiki](
 
 ## turn_to_ball.py
 In order to kick the ball or receive a pass the robots kicker must point into the direction of the ball. This script tries to implement this. Based on the current ball position in the robot coordinate system (e.g. (10mm, -300mm)) the script sets an agular velocity. The goal is that the robot should turn in such a way that its kicker is pointing in the direction of the ball. In order to avoid jitter because the robot would constantly try to fix its orientiation when it is not absolutely perfect I have added an epsilon. This defines the offset from the perfect orientation that is considered ok. This epsilon is parameter that can be adapted if necessary.
+
+## aim_to_shoot.py
+This function returns the target position for a robot that wants to aim and shoot the ball towards the goal or to another robot (passing the ball).
+
+NEXT STEPS:
+1. Move robot to robot position
+2. Use turn_to_ball function
+3. Move slightly (slowly) forward so the kicker is touching the ball
+4. Kick

@@ -12,10 +12,8 @@ from sklearn.linear_model import LinearRegression
       The frame rates might not start at 0 so taking the 6th entry of the coordinate set might
       not be the correct frame.
     - We have to change the GOAL_WIDTH to the actual goal width
-    - The goalie does not stand right at the edge of the field. The goals x coordinte maybe
-      needs to be adjusted.
-    - The function can be extended to calculate the ball velocity. By doing that we can not 
-      only predict where the ball is going to be but also when.
+    - The goalie line is the line on which the goalie is supposed to move
+    - The script calculates the ball velocity but it is not used yet.
     - We might need to change the team yellow etc. setting. It is just a variable to remember
       that we need to decide which goal is ours.
 

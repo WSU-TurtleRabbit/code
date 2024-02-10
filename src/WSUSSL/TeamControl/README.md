@@ -1,5 +1,5 @@
-CreatedOn: 2024-02-10T14:07:47+11:00
-LastMod: 2024-02-10T14:12:56+11:00
+###### CreatedOn: 2024-02-10T14:07:47+11:00
+###### LastMod: 2024-02-10T14:12:56+11:00
 
 
 # TEAM CONTROL
@@ -36,4 +36,5 @@ To implement a skill, you will need to think about the following:
 	  
 	  This can be setting everything to 0 so it stops moving.
 	  
-	  Please Message on Software channel for any questions.
+
+### Please Message on Software channel for any questions.

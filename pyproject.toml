@@ -7,6 +7,9 @@ name = "WSUSSL"
 requires-python = ">=3.9"
 dependencies = [
     "numpy",
+    "shapely",
+    "matplotlib",
+    "scikit-learn"
 ]
 
 dynamic = [

@@ -11,7 +11,7 @@ from WSUSSL.Shared.action import Action
 
 class Server:
 
-    def __init__(self, max_robots:int ):
+    def __init__(self, max_robots=6):
         """_summary_
             UDP side server. 
             The server will broadcast it's address over broadcast

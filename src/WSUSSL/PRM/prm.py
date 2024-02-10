@@ -61,6 +61,7 @@ def prm():
     print(type(pointsToEnd[0]))
     
     print(pointsToEnd[0])
+    print(pointsToEnd[0, 1])
     return pointsToEnd, dist
 
 

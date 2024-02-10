@@ -66,7 +66,7 @@ class PRMController:
             plt.savefig("{}_samples.png".format(self.numOfCoords))
         plt.show()
 
-        return self.pointsToEnd, self.dist
+        return self.pointsToEndInt, self.dist
 
 
     def genCoords(self):
@@ -140,8 +140,10 @@ class PRMController:
         y = [int(item[1]) for item in pointsToDisplay]
         plt.plot(x, y, c="blue", linewidth=3.5)
 
-        self.pointsToEnd = [str(self.findPointsFromNode(path))
-                       for path in pathToEnd]
+        self.pointsToEndInt = np.array([(self.findPointsFromNode(path))
+                       for path in pathToEnd])
+        
+        self.pointsToEnd = [str(x) for x in self.pointsToEndInt]
         print("****Output****")
 
         print("The quickest path from {} to {} is: \n {} \n with a distance of {}".format(

@@ -58,9 +58,5 @@ def follow_robot(target_position, robot_position):
     return vx, vy
 
 
-if __name__ == "__main__":
-    robot_id = int(input("Enter Robot ID"))
-    vx, vy = go_towards_target()
-    new_action = Action(robot_id,vx,vy,0,0,0)
 
 

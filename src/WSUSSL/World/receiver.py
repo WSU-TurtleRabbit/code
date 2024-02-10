@@ -24,36 +24,36 @@ class proto2_ssl_receiver:
         self.connect() # connects to the socket
         
     def connect(self):
-            """Binds the sock with ip and port and configure to UDP multicast."""
+        """Binds the sock with ip and port and configure to UDP multicast."""
 
-            if not isinstance(self.ip_addr, str):
-                raise ValueError('IP type should be string type')
-            if not isinstance(self.port, int):
-                raise ValueError('Port type should be int type')
-            
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-            self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 128)
-            self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
-            self.sock.bind((self.ip_addr, self.port))
+        if not isinstance(self.ip_addr, str):
+            raise ValueError('IP type should be string type')
+        if not isinstance(self.port, int):
+            raise ValueError('Port type should be int type')
+        
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 128)
+        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
+        self.sock.bind((self.ip_addr, self.port))
 
-            host = socket.gethostbyname(socket.gethostname())
-            self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_IF, socket.inet_aton(host))
-            self.sock.setsockopt(socket.SOL_IP, socket.IP_ADD_MEMBERSHIP, 
-                    socket.inet_aton(self.ip_addr) + socket.inet_aton(host))
+        host = socket.gethostbyname(socket.gethostname())
+        self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_IF, socket.inet_aton(host))
+        self.sock.setsockopt(socket.SOL_IP, socket.IP_ADD_MEMBERSHIP, 
+                socket.inet_aton(self.ip_addr) + socket.inet_aton(host))
             
     def receive(self):
         """Receive package and decode."""
-
         data, _ = self.sock.recvfrom(1024)
         decoded_data = ssl_vision_wrapper_pb2.SSL_WrapperPacket().FromString(data)
         return decoded_data
+    
     # def connect(self):
     #     """Connect self to the socket
     #     """
     #     print(self.ip_addr, self.port)
     #     self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    #     #self.sock.bind((self.ip_addr, self.port))
+    #     self.sock.bind((self.ip_addr, self.port))
 
     def listen(self):
         if self.sock is None:
@@ -125,7 +125,7 @@ class proto2_grsim_py_generator():
         """Connects to GRsim -> sends message
         Args:
             grsim_ip_addr (str): ip addr of the grsim client UDP
-            grsim_port (_type_): port num of the grsim client UDP
+            grsim_port (int): port num of the grsim client UDP
         """
         self.grsim_ip_addr = grsim_ip_addr
         self.grsim_port = grsim_port

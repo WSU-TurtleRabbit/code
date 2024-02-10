@@ -1,7 +1,8 @@
+from WSUSSL.World.model import Model as wm 
 __all__ = []
 
 class BaseSkill:
-    def __init__(self, world_model):
+    def __init__(self, world_model:wm):
         self.states = {}
         self.current_state = None  # Initialize current state
         self.world_model = world_model

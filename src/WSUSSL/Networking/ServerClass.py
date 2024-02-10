@@ -108,19 +108,9 @@ class Server:
                 # Broadcasting server Info @broadcasting port
                 self.bsock.sendto(server, ('<broadcast>', 12342))
                 print("Broadcasting")
-                try:
-                    # Set a timeout for receiving responses
-                    self.sock.settimeout(1)
-                    # waits for 1 seconds response time. 
-                    data, addr = self.sock.recvfrom(1024)
-                    # if there's anything received, decode it.
-                    data = data.decode()
-                    print(data)
-                    # triggers id setup
-                    self.assign_ID(addr)
-                except socket.timeout:
-                    # Ignore timeouts and continue broadcasting
-                    pass
+                
+                self.listen_udp(1)
+                
 
     def assign_ID(self,addr):
         print("Robot Connection Request Received")
@@ -151,7 +141,6 @@ class Server:
         """
         # customised message : ping
         msg = b'ping'
-        self.sock.settimeout(1)
         while self.gamestate == "ACTIVE":
             eTime = time.time()+10 # 10s after current time
             for i in range(6):
@@ -164,16 +153,12 @@ class Server:
                     status = False
                     # starts ping
                     while time.time() < eTime and not status:
-                        try:
-                            self.send_message(msg,robot_id)
-                            data, addr = self.sock.recvfrom(1024)
-                            info = data.decode()
-                            print(info)
-                            status = True
-                        except socket.timeout:
-                            pass
-                        finally:
-                            print(f"Robot id : {robot_id} is Alive : {status}")
+                        self.send_message(msg,robot_id)
+                        info = self.listen_udp(1)
+                        print(info)
+                        if info != None:
+                            status = True                    
+                        print(f"Robot id : {robot_id} is Alive : {status}")
 
                     if status == True:
                         #updates last seen time
@@ -183,12 +168,30 @@ class Server:
                         del self.robots[robot_id]
                         del self.active[robot_id]
                         
-
+    def listen_udp(self,expire:int):
+        self.sock.settimeout(expire)
+        try:
+            data, addr = self.sock.recvfrom(1024)
+            data = data.decode()
+            print(f"message: '{data}' is recieved from {addr}")
+            if data == "new":
+                self.assign_ID(addr)
+                return 
+            else:
+                if addr in self.robots.values():
+                    i = list(self.robots.values()).index(addr)
+                    id = list(self.robots.keys())[i]
+                    print(f"message received from Robot: {id} @ {addr} at {TIME}")
+                    # update last checkin timer
+                    self.active[id] = TIME
+                    return data
+                print(data)
+        except socket.timeout:
+            return
+            
                 
     def broadcast_all(self, msg: str):
         eTime = time.time() + 5
-        all_received = False # bool for all robots being able to recieve the broadcast
-        
         #message that needs to be broadcasted
         msg = bytes(msg.encode('utf-8'))
 
@@ -196,34 +199,6 @@ class Server:
             self.bsock.sendto(msg, ('<broadcast>', 12342))
             print("Broadcasting :", msg)
             
-            # will try to boradcast and listen for feedback
-            try:
-                # Set a timeout for receiving responses
-                self.sock.settimeout(1)
-                data, addr = self.sock.recvfrom(1024)
-                data = data.decode()
-                print(data)
-                #checks for who is sending the message
-                if addr in self.robots.values():
-                    # get robot id
-                    i = list(self.robots.values()).index(addr)
-                    id = list(self.robots.keys())[i]
-                    print(f"message : '{data}' received from Robot: {id} @ {addr} at {TIME}")
-                    # update last checkin timer
-                    self.active[id] = TIME
-                else :  #this means that device doesn't exist in our log 
-                    print("New unknown device found")
-                    # enable user input ? 
-                    add = input("1. add 2. ignore")
-                    #if add then assign new id and save it
-                    if (add == "1"):
-                        self.assign_ID(addr)
-                    else:
-                        print("ignored")
-
-            except socket.timeout:
-                # Ignore timeouts and continue broadcasting
-                pass
 
         
     # Try not to use this 

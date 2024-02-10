@@ -18,7 +18,7 @@ from WSUSSL.PRM import PRMController, Obstacle, Utils
 FIELD_WIDTH = 2760 #mm
 FIELD_LENGTH = 5040 #mm
 
-def main():
+def prm():
     numSamples = 20 #default: 47
     buffer = 250 #mm # dimension of the obstacles will be a square of the size 2*buffer x 2*buffer
 
@@ -30,6 +30,8 @@ def main():
                     [-549, 1000],
                     [-2499, -250],
                     [-3599, 400]]
+
+    print("****Obstacles****")
 
     # Set obstacles
     allObs = []
@@ -51,13 +53,14 @@ def main():
     prm.setBoundaries(x_min, y_min, x_max, y_max)
     # Initial random seed to try
     initialRandomSeed = 0
-    pointsToEnd, dist = prm.runPRM(initialRandomSeed)
+    pointsToEnd, dist = prm.runPRM(initialRandomSeed,False)
 
     # pointsToEnd[0] = current position, pointsToEnd[1] = next target position as input for go_to_target function
     new_target_point = pointsToEnd[1]
 
     print(new_target_point, dist)
+    return pointsToEnd, dist
 
 
 if __name__ == '__main__':
-    main()
+    prm()

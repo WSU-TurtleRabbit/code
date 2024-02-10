@@ -66,6 +66,9 @@ class PRMController:
             plt.savefig("{}_samples.png".format(self.numOfCoords))
         plt.show()
 
+        return self.pointsToEnd, self.dist
+
+
     def genCoords(self):
         X = np.random.randint(self.x_min, self.x_max, 
                               size=(self.numOfCoords, 1))
@@ -120,7 +123,7 @@ class PRMController:
         self.startNode = str(self.findNodeIndex(self.current))
         self.endNode = str(self.findNodeIndex(self.destination))
 
-        dist, prev = dijkstra(self.graph, self.startNode)
+        self.dist, prev = dijkstra(self.graph, self.startNode)
 
         pathToEnd = to_array(prev, self.endNode)
 
@@ -137,15 +140,15 @@ class PRMController:
         y = [int(item[1]) for item in pointsToDisplay]
         plt.plot(x, y, c="blue", linewidth=3.5)
 
-        pointsToEnd = [str(self.findPointsFromNode(path))
+        self.pointsToEnd = [str(self.findPointsFromNode(path))
                        for path in pathToEnd]
         print("****Output****")
 
         print("The quickest path from {} to {} is: \n {} \n with a distance of {}".format(
             self.collisionFreePoints[int(self.startNode)],
             self.collisionFreePoints[int(self.endNode)],
-            " \n ".join(pointsToEnd),
-            str(dist[self.endNode])
+            " \n ".join(self.pointsToEnd),
+            str(self.dist[self.endNode])
         )
         )
 

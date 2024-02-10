@@ -53,12 +53,14 @@ def prm():
     prm.setBoundaries(x_min, y_min, x_max, y_max)
     # Initial random seed to try
     initialRandomSeed = 0
-    pointsToEnd, dist = prm.runPRM(initialRandomSeed,False)
+    pointsToEnd, dist = prm.runPRM(initialRandomSeed)
 
     # pointsToEnd[0] = current position, pointsToEnd[1] = next target position as input for go_to_target function
-    new_target_point = pointsToEnd[1]
+    #new_target_point = pointsToEnd[1]
 
-    print(new_target_point, dist)
+    print(type(pointsToEnd[0]))
+    
+    print(pointsToEnd[0])
     return pointsToEnd, dist
 
 

@@ -120,16 +120,13 @@ def predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number,
         last_five_ball_positions_y = ball_positions_y[current_frame_number - num_samples:current_frame_number]
 
     # Fit polynomial regression to the last frames' ball positions
-    degree = 2
-    poly_features = PolynomialFeatures(degree=degree)
-    X_poly = poly_features.fit_transform(np.array(last_five_ball_positions_x).reshape(-1, 1))
     model = LinearRegression()
-    model.fit(X_poly, last_five_ball_positions_y)
-    
+    model.fit(np.array(last_five_ball_positions_x).reshape(-1, 1), last_five_ball_positions_y)
+
+
     # Generate trajectory points
     x_values = np.linspace(-FIELD_LENGTH/2, FIELD_LENGTH/2, 20) 
-    X_values_poly = poly_features.transform(x_values.reshape(-1, 1))
-    y_values = model.predict(X_values_poly)
+    y_values = model.predict(x_values.reshape(-1, 1))
 
     current_ball_position_x = ball_positions_x[-1]  # Current ball position
 
@@ -149,7 +146,8 @@ def predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number,
             direction_info = "Moving perpendicular to the goal/ not moving"
     
     # Find the y-values of the trajectory at the goal line x-coordinate
-    trajectory_y_at_goal_line = model.predict(poly_features.transform(np.array([GOALIE_LINE]).reshape(-1, 1)))
+    trajectory_y_at_goal_line = model.predict(np.array([GOALIE_LINE]).reshape(-1, 1))
+
 
     # Calculate velocity
     num_positions = len(ball_positions_x)

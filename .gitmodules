@@ -1,0 +1,3 @@
+[submodule "TRControl/ssl-vision-client"]
+	path = TRControl/ssl-vision-client
+	url = https://github.com/RoboCup-SSL/ssl-vision-client

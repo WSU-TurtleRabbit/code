@@ -6,7 +6,6 @@
 
 # SSL - Vision 
     Contains : 
-    
     1. Detection Data
         1. frame Data 
             - frame_number
@@ -67,5 +66,46 @@
             - derived_camera_world_tz
 
 # gr Sim 
-    1. commands : sending to gr Sim
-    2. packet : recieves from gr Sim
+    1. Recieving Robot Status from grSim
+        1. robot_id
+        2. infrared  (bool)
+        3. flat_kick (bool)
+        4. chip_kick (bool)
+
+    2. Sending packet to gr Sim
+        a. commands : modifying individual robot's operation
+            1. timestamp
+            2. is team yellow (bool)
+            3. **Robot Commands**
+                **REQUIRED**
+                1. id : robotID 
+                2. kick speed x 
+                3. kick speed z
+                4. vel tangnt
+                5. vel normal
+                6. vel angular 
+                7. spinner
+                8. wheels speed
+                **OPTIONAL**
+                9. wheel 1 speed
+                10. wheel 2 speed
+                11. wheel 3 speed
+                12. wheel 4 speed
+
+        b. replacements : change object position on field
+            1. Ball Replacement : **OPTIONAL**
+                1. x
+                2. y
+                3. vx 
+                4. vy
+            2. Robot Replacement : 
+                **REQUIRED**
+                1. x 
+                2. y
+                3. dir
+                4. id
+                5. is yellow team (bool)
+                **OPTIONAL**
+                6. turn on (bool) 
+
+            

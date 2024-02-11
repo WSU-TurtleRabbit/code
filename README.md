@@ -18,4 +18,35 @@ Eventually this should evolve into the more complete team code, with world model
   git clone --branch base-team-control --recursive git@github.com:WSU-TurtleRabbit/code.git
 ```
 
+  If you already cloned the repo, but not recursively, or for a different branch, then you can fix that with these steps:
+
+```
+cd code
+git checkout base-team-control
+git submodule update --init --recursive
+```
+
 * Create the `ssl-vision-cli` binary
+
+  This requires node (nodejs and/or npm) and programming language Go to be installed on your machine. Google is your friend.
+
+  If you have that, build the `ssl-vision-cli` binary like this:
+
+```
+  cd code/TRControl/ssl-vision-client/cmd/ssl-vision-cli
+  go build
+```
+
+  This should give you an executable, `ssl-vision-cli` in that directory.
+
+  The executable is also directly available from the ssl-vision-client
+  directory and in that case does not need to be build. It will not
+  work on every linux version, the above step should work as long as
+  you have the required software installed, independent of the linux
+  version. If you just download the binary, copy it into your repository, into
+  the `code/TRControl/ssl-vision-client/cmd/ssl-vision-cli/` directory.
+
+
+  
+
+  

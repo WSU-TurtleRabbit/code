@@ -11,6 +11,8 @@ Eventually this should evolve into the more complete team code, with world model
 * The initial setup is for grSim, so you will need to install that on your machine:
   https://github.com/RoboCup-SSL/grSim
 
+  You need to also set the "vision multicast port" on grSim to 10006.
+
 * Clone this repository / branch on your machine:
   we are using the ssl-vision-client as a submodule, so you should use the "--recursive" option when cloning:
 
@@ -46,7 +48,12 @@ git submodule update --init --recursive
   version. If you just download the binary, copy it into your repository, into
   the `code/TRControl/ssl-vision-client/cmd/ssl-vision-cli/` directory.
 
+* Start the simulator, change the vision multicast port to 10006.
+  The main TurtleRabbitController is in the subdirectory TRControl, cd into that.
+  Start it with `python3 ./trcontrol.py`.
 
+  This should run a demo client.
+  
   
 
   

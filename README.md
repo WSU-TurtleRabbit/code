@@ -80,10 +80,4 @@ chmod 755 install.sh
 ./install.sh
 ```
 
-To communicate with grSim, protobuf files need to be compiled into python. A script is provided [here](https://github.com/WSU-TurtleRabbit/code/src/Networking/proto2/setup.sh). It will automatically download the required protobuf files from [grSim](https://github.com/RoboCup-SSL/grSim.git) and compile using `protoc`. Installation of `protoc` will be attempted. However if it fails, `protoc` installation guide can be found [here](https://grpc.io/docs/protoc-installation/).
-
-```bash
-cd src/WSUSSL/Networking/proto2/
-chmod 755 setup.sh
-./setup.sh
-```
+To communicate with grSim, protobuf files need to be compiled into python. Protobuf files can be found in [grSim](https://github.com/RoboCup-SSL/grSim.git) and compile using `protoc`. A `protoc` installation guide can be found [here](https://grpc.io/docs/protoc-installation/).

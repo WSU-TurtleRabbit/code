@@ -8,7 +8,10 @@ class BaseSkill:
         self.world_model = world_model
         self.start_state = None
         self.final_state = None
-        
+
+    # def get_world_update(self,new_world_model: wm):
+    #     self.world_model = new_world_model 
+
     def add_state(self, state: str, function: callable=None):
         """Adding states and associated function to the skill script."""
         self.states[state] = function

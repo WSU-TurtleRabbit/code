@@ -37,13 +37,12 @@ class GoTowards(BaseSkill):
         print("getting data")
         # getting robot data 
         #robot_id = int(input("Enter a robot that you want to move"))
-        robot_position = self.world_model.get_robot_position(self.robot_id, True)
+        self.robot_position = self.world_model.get_robot_position(self.robot_id, True)
         #if we want to go towards ball
-        ball_position = self.world_model.get_ball_position()
+        self.ball_position = self.world_model.get_ball_position()
         # now we have the data, we can now run the commands
         self.transition_to('run')
-        return ball_position, robot_position
-
+        return None
 
     def run_action(self,ball_position,robot_position):
         print("Go Towards the target position: Run action")
@@ -56,7 +55,9 @@ class GoTowards(BaseSkill):
         
     def finish_action(self):
         print("Go Towards: Finish action")
-        return Action(self.robot_id,0,0,0,0,0)        
+        if(self.robot_position == self.ball_position):
+            return Action(self.robot_id, 0., 0., 0., 0, 0.)
+        return None      
 
 
 def turn_to_ball(ball_position, epsilon = 0.15):

@@ -4,7 +4,7 @@ This repo contains the software for our team. This includes the
 overall team control, and also the code that translates actions into
 motor commands, our motor control.
 
-## Networking: [link](https://github.com/WSU-TurtleRabbit/code/tree/quali24/src/WSUSSL/Networking)
+## Networking: [Folder](https://github.com/WSU-TurtleRabbit/code/tree/quali24/src/WSUSSL/Networking)
 ### [ServerClass](https://github.com/WSU-TurtleRabbit/code/blob/quali24/src/WSUSSL/Networking/ServerClass.py)
 
 Server Class is a class that establish and maintain basic communications with the robots of the team. This includes : 
@@ -12,11 +12,11 @@ Server Class is a class that establish and maintain basic communications with th
 2. Receving
 3. Sending 
 
-## PRM: [link](https://github.com/WSU-TurtleRabbit/code/tree/quali24/src/WSUSSL/PRM)
+## PRM: [Folder](https://github.com/WSU-TurtleRabbit/code/tree/quali24/src/WSUSSL/PRM)
 PRM is a path finder module created by 
 It has been slightly modified to be able to integrate with the rest of our codes.
 
-## Shared: [Link](https://github.com/WSU-TurtleRabbit/code/tree/quali24/src/WSUSSL/Shared)
+## Shared: [Folder](https://github.com/WSU-TurtleRabbit/code/tree/quali24/src/WSUSSL/Shared)
 
 Contains action and utils python files. This is shared between Robot Client and Server.
 
@@ -56,7 +56,7 @@ There are several skills avaiable at this point of time :
 Skill Control is a software that meant to process any skills that exist within our current module, 
 and forwards to the Server's UDP, then onto the robot.
 
-## World : [Link](https://github.com/WSU-TurtleRabbit/code/blob/quali24/src/WSUSSL/World)
+## World : [Folder](https://github.com/WSU-TurtleRabbit/code/blob/quali24/src/WSUSSL/World)
 
 In world, we have a World Model Class and Receiver Class
 

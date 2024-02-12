@@ -20,7 +20,6 @@ if __name__ ==  '__main__':
     
     
     world = Model()
-    server = Server(0)
     
     # r = int(input("1. ssl-vision 2.grsim"))
     # match r:
@@ -35,14 +34,14 @@ if __name__ ==  '__main__':
         case 2:
             receiver = grsim_coms(world)
     
-    a_pair_of_socks = receiver.pipe()
+    world_pipe = receiver.pipe()
     world_update = Process(target=receiver.listen_world)
 
-    skills = SkillControl(a_pair_of_socks, [])
-    different_pipe_connection = skills.pipe()
+    skills = SkillControl(world_pipe, [])
+    skill_pipe = skills.pipe()
     team_controller = Process(target=skills.run_skill_loop)
 
-    server = Server(different_pipe_connection)
+    server = Server(skill_pipe)
 
     robot_receive = Process(target=server.listen_udp)
     send_action_to_robot = Process(target=server.run)

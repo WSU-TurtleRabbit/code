@@ -24,11 +24,11 @@ class Receiver:
         
         # print(self)
         self.connect() # connects to the socket
-        self.a_pair_of_socks = None
+        self.world_pipe = None
 
     def pipe(self):
         from multiprocessing import Pipe
-        self.a_pair_of_socks, _ = Pipe()
+        self.world_pipe, _ = Pipe()
         return _
 
     def connect(self):
@@ -68,7 +68,7 @@ class Receiver:
             data = self.receive()
             self.update_world_model(data)
 
-            self.a_pair_of_socks.send(self.model)
+            self.world_pipe.send(self.model)
             
     def receive(self):
         """Receive package and decode."""

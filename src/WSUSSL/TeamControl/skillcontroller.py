@@ -9,18 +9,18 @@ from WSUSSL.TeamControl.Skills.sampleskill import SampleSkill
 import time
 
 class SkillControl:
-    def __init__(self, pipe_connection, skills):
-        self.pipe_connection = pipe_connection
+    def __init__(self, world_pipe, skills):
+        self.world_pipe = world_pipe
         self.skills = skills  # A collection of skills
         self.current_skill = None
         #self.update_world_model = update_world_model(world_model)
 
         self.world_model = None
-        self.different_pipe_connection = None
+        self.skill_pipe = None
 
     # def get_world_update(self):
     #     while True:
-    #         self.world_model = self.pipe_connection.recv()
+    #         self.world_model = self.world_pipe.recv()
 
     def select_skill(self):
         # Logic to select the appropriate skill based on the world model
@@ -29,12 +29,12 @@ class SkillControl:
 
     def run_skill_loop(self):
         while True:
-            self.world_model = self.pipe_connection.recv()
+            self.world_model = self.world_pipe.recv()
             self.select_skill()
             if not self.current_skill.is_final():
                 print("skill loop")
                 action = self.current_skill.execute()
-                self.different_pipe_connection.send(action)
+                self.skill_pipe.send(action)
 
                 # todo: now send this action to the robot
                 time.sleep(5)  # Skill execution rate
@@ -48,7 +48,7 @@ class SkillControl:
 
     def pipe(self):
         from multiprocessing import Pipe
-        self.different_pipe_connection, _ = Pipe()
+        self.skill_pipe, _ = Pipe()
         return _
 
 if __name__ == '__main__':

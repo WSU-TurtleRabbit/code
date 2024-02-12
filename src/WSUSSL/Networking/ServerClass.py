@@ -11,7 +11,7 @@ from WSUSSL.Shared.action import Action
 
 class Server:
 
-    def __init__(self, two_hands_and_feet, max_robots=6):
+    def __init__(self,skill_pipe, max_robots=6):
         """_summary_
             UDP side server. 
             The server will broadcast it's address over broadcast
@@ -44,7 +44,7 @@ class Server:
         self.gamestate = "ACTIVE"
         self.create_sock() # creates the sockets (UDP, Broadcast)
         self.find_robots() # looks for robots on the net using the 2 sockets
-        self.two_hands_and_feet = two_hands_and_feet
+        self.skill_pipe = skill_pipe
         
     def create_sock(self):
         """_summary_
@@ -232,5 +232,5 @@ class Server:
 
     def run(self):
         while True:
-            action = self.two_hands_and_feet.recv()
+            action = self.skill_pipe.recv()
             self.send_action(action)

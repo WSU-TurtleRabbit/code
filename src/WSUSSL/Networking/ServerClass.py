@@ -92,27 +92,12 @@ class Server:
         """_summary_
             This function is triggered after the server sockets are initialised
             This is used to locate the robots and trigger id assignation
-        Params:
-            server (bytes) : encoded message - server recieve address
-            data (bytes) : encoded message recieved via UDP
-            addr (tuple) : UDP address received (aka the client that sends the message)
         """
-        
-        server = bytes(str(self.rs_addr).encode('utf-8'))
-
         # Set the maximum number of robots you want to discover
 
         while len(self.robots) < self.max_robots:
-            print("Broadcasting info", server)
-
-            # Initialise timer.
-            max_broadcast_time = time.time()+10
-            while time.time()< max_broadcast_time and len(self.robots) < self.max_robots:
-                # Broadcasting server Info @broadcasting port
-                self.broadcaster.sendto(server, ('<broadcast>', 12342))
-                #print("Broadcasting")
+            self.broadcast_all(str(self.rs_addr),10,True)
                 
-                self.listen_udp(1)
                 
 
     def assign_ID(self,addr):
@@ -201,7 +186,7 @@ class Server:
             return
             
                 
-    def broadcast_all(self, msg: str,timer=5):
+    def broadcast_all(self, msg: str,timer=5,countrobots=False):
         """Broadcasting Message to ALL Clients on the network
 
         Args:
@@ -211,11 +196,15 @@ class Server:
         eTime = time.time() + timer
         #message that needs to be broadcasted
         msg = bytes(msg.encode('utf-8'))
-
-        while time.time() < eTime:
-            self.broadcaster.sendto(msg, ('<broadcast>', 12342))
-            print("Broadcasting :", msg)
-            
+        if countrobots:
+            while time.time() < eTime and len(self.robots) < self.max_robots:
+                self.broadcaster.sendto(msg, ('<broadcast>', 12342))
+                print("Broadcasting :", msg)
+                self.listen_udp(1)
+        else : 
+            while time.time()<eTime:
+                self.broadcaster.sendto(msg, ('<broadcast>', 12342))
+                print("Broadcasting :", msg)
 
         
     # Try not to use this 

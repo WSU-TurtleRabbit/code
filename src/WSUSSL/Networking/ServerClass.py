@@ -20,10 +20,9 @@ class Server:
         Args:
             max_robots (int): number for maximum robot to be active
         PARAMS : 
-            os (str) : stores operating system info (not in use now)
             ip (str) : stores ip addresss (used in create sock)
-            port (int) : stores port num (used in create sock)
-            addr (tuple) : stores information about the server's address
+            ss_addr(tuple) : tuple of server send sock address
+            rs_addr (tuple) : tuple of server recieve sock address
             robots (dict) : dictionary of robots and it's addresses
             active (dict) : dictionary of all robots last active time.
             max_robots (int) : int to decide on what is the maximum number of robots for the server to look for
@@ -36,10 +35,9 @@ class Server:
             4. recieves feedback message from robots 
 
         """
-        self.os = None
         self.ip = None
-        self.port = None
-        self.addr = None
+        self.ss_addr = None
+        self.rs_addr = None
         self.robots = dict()
         self.active = dict()
         self.max_robots = max_robots
@@ -51,37 +49,42 @@ class Server:
         """_summary_
             creates socketes
         Params: 
-            sock (socket) : send / recives message on the same network
-            bsock (socket) : broadcasting messages to everything on the net only *NO RECIEVE*
+            sender (socket) : send message to all / individual robots
+            receiver (socket) : receive message from all robots
+            broadcaster (socket) : broadcasting messages to everything on the net only *NO RECIEVE*
             bind_success (bool): boolean to determine whether the binding process is successful.
 
             
         Returns:
             _type_: _description_
         """
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.bsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        self.bsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.bsock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        
+        self.sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.receiver = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.broadcaster = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        self.broadcaster.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.broadcaster.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
         self.ip = socket.gethostbyname(socket.gethostname()) #windows
         if sys.platform == 'linux':
             self.ip = os.popen('hostname -I').read().strip().split(" ")[0]
         
-
+        self.sender,self.ss_addr = self.bind_sock(self.sender)
+        self.receiver,self.rs_addr = self.bind_sock(self.receiver)
+        
+    def bind_sock(self,sock:socket.socket):
         bind_success = False
         while not bind_success:
             try:
-                self.port = random.randint(5000, 9000)
-                self.addr = tuple([self.ip, self.port])
-                print(self.addr)
-                self.sock.bind(self.addr)
+                port = random.randint(5000, 9000)
+                addr = (self.ip, port)
+                sock.bind(addr)
                 bind_success = True
             except Exception as e:
                 print(e)
                 pass
-            # finally:
-            #     print("Socket Binded : ", bind_success)
+            finally:
+                print("Socket Binded : ", bind_success)
+        return sock, addr
 
 
 
@@ -90,12 +93,12 @@ class Server:
             This function is triggered after the server sockets are initialised
             This is used to locate the robots and trigger id assignation
         Params:
-            server (bytes) : encoded message - server address
+            server (bytes) : encoded message - server recieve address
             data (bytes) : encoded message recieved via UDP
             addr (tuple) : UDP address received (aka the client that sends the message)
         """
         
-        server = bytes(str(self.addr).encode('utf-8'))
+        server = bytes(str(self.rs_addr).encode('utf-8'))
 
         # Set the maximum number of robots you want to discover
 
@@ -106,8 +109,8 @@ class Server:
             max_broadcast_time = time.time()+10
             while time.time()< max_broadcast_time and len(self.robots) < self.max_robots:
                 # Broadcasting server Info @broadcasting port
-                self.bsock.sendto(server, ('<broadcast>', 12342))
-                print("Broadcasting")
+                self.broadcaster.sendto(server, ('<broadcast>', 12342))
+                #print("Broadcasting")
                 
                 self.listen_udp(1)
                 
@@ -168,10 +171,18 @@ class Server:
                         del self.robots[robot_id]
                         del self.active[robot_id]
                         
-    def listen_udp(self,expire:int):
-        self.sock.settimeout(expire)
+    def listen_udp(self,expire=1):
+        """Server listening on UDP
+
+        Args:
+            expire (int,optional): timer for setting time out on listen. Default: 1s
+
+        Returns:
+            data: if message received from Client (Robot), return it.
+        """
+        self.receiver.settimeout(expire)
         try:
-            data, addr = self.sock.recvfrom(1024)
+            data, addr = self.receiver.recvfrom(1024)
             data = data.decode()
             print(f"message: '{data}' is recieved from {addr}")
             if data == "new":
@@ -190,13 +201,19 @@ class Server:
             return
             
                 
-    def broadcast_all(self, msg: str):
-        eTime = time.time() + 5
+    def broadcast_all(self, msg: str,timer=5):
+        """Broadcasting Message to ALL Clients on the network
+
+        Args:
+            msg (str): the message that you want to broadcast
+            timer(int): the time that you want this broadcast to last for. Default: 5s
+        """
+        eTime = time.time() + timer
         #message that needs to be broadcasted
         msg = bytes(msg.encode('utf-8'))
 
         while time.time() < eTime:
-            self.bsock.sendto(msg, ('<broadcast>', 12342))
+            self.broadcaster.sendto(msg, ('<broadcast>', 12342))
             print("Broadcasting :", msg)
             
 
@@ -211,7 +228,7 @@ class Server:
         """
         msg = bytes(msg.encode('utf-8'))
         # while not received, repeat 5 times
-        self.sock.sendto(msg, self.robots[str(id)])
+        self.sender.sendto(msg, self.robots[str(id)])
         time.sleep(2)
     
     def send_action(self, action: Action):
@@ -220,7 +237,7 @@ class Server:
         # From ID obtained, get it's address
         addr = self.robots[robot_id]
         # sends the action to that robot
-        self.sock.sendto(action.encode(),addr)
+        self.sender.sendto(action.encode(),addr)
         print(f"{action} has been sent to Robot (ID) : {robot_id}")
         
         

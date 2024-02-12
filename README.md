@@ -4,33 +4,34 @@ This repo contains the software for our team. This includes the
 overall team control, and also the code that translates actions into
 motor commands, our motor control.
 
-## [Networking]
-### [ServerClass]
+## Networking: [link](https://github.com/WSU-TurtleRabbit/code/tree/quali24/src/WSUSSL/Networking)
+### [ServerClass](https://github.com/WSU-TurtleRabbit/code/blob/quali24/src/WSUSSL/Networking/ServerClass.py)
 
 Server Class is a class that establish and maintain basic communications with the robots of the team. This includes : 
 1. Broadcasting 
 2. Receving
 3. Sending 
 
-## [PRM]
+## PRM: [link](https://github.com/WSU-TurtleRabbit/code/tree/quali24/src/WSUSSL/PRM)
 PRM is a path finder module created by 
 It has been slightly modified to be able to integrate with the rest of our codes.
 
-## [Shared]
-### [Action]
+## Shared: [Link](https://github.com/WSU-TurtleRabbit/code/tree/quali24/src/WSUSSL/Shared)
+### [Action](https://github.com/WSU-TurtleRabbit/code/blob/quali24/src/WSUSSL/Shared/action.py)
 
 Action is a predetermind packet that will automatically compile itself.
 This packet will then be transfered onto the Robot Client.
 
-### [utils]
+### [utils](https://github.com/WSU-TurtleRabbit/code/blob/quali24/src/WSUSSL/Shared/utils.py)
 
-Utils is a User Interface that allows you to humanily input the values desired using numbers. After the action has been compiled, you can use the Server.send_action(UI()) to send the action.
+Utils is a User Interface that allows you to humanily input the values desired using numbers. 
+After the action has been compiled, you can use the Server.send_action(UI()) to send the action.
 
-## [Team Control]
+## [Team Control](https://github.com/WSU-TurtleRabbit/code/tree/quali24/src/WSUSSL/TeamControl)
 
-### [Skills]
+### [Skills](https://github.com/WSU-TurtleRabbit/code/tree/quali24/src/WSUSSL/TeamControl/Skills)
 
-#### [base Skill]
+#### [base Skill](https://github.com/WSU-TurtleRabbit/code/blob/quali24/src/WSUSSL/TeamControl/Skills/baseskill.py)
 
 Base Skill is a class that initialise any skills that has different state.
 
@@ -44,14 +45,16 @@ There are several skills avaiable at this point of time :
 
 ## [Skill Control](https://github.com/WSU-TurtleRabbit/code/tree/quali24/src/WSUSSL/skillcontroller)
 
-Skill Control is a software that meant to process any skills that exist within our current module, and forwards to the Server's UDP, then onto the robot.
+Skill Control is a software that meant to process any skills that exist within our current module, 
+and forwards to the Server's UDP, then onto the robot.
 
-## [World]
+## World : [Link](https://github.com/WSU-TurtleRabbit/code/blob/quali24/src/WSUSSL/World)
 In world, we have a World Model Class and Receiver Class
-### [World Model]
-World Model consists of all data retrieved from SSL-vision or grSim. see [World Model README] for more information.
+### [World Model](https://github.com/WSU-TurtleRabbit/code/blob/quali24/src/WSUSSL/World/model.py)
+World Model consists of all data retrieved from SSL-vision or grSim. 
+see [PROTO README](https://github.com/WSU-TurtleRabbit/code/blob/quali24/src/WSUSSL/World/proto2/README.md) for more information.
 
-### [Receiver]
+### [Receiver](https://github.com/WSU-TurtleRabbit/code/blob/quali24/src/WSUSSL/World/receiver.py)
 World Receiver class contains all reciever connection that would be useful for both ssl-vision and grsim.
 
 *Currently working on integrating the command sender to grsim*

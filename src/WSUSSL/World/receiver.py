@@ -24,6 +24,12 @@ class Receiver:
         
         # print(self)
         self.connect() # connects to the socket
+        self.a_pair_of_socks = None
+
+    def pipe(self):
+        from multiprocessing import Pipe
+        self.a_pair_of_socks, _ = Pipe()
+        return _
 
     def connect(self):
         """ Connect self to vision
@@ -61,6 +67,8 @@ class Receiver:
         while True: #while it is true, it will always listen and update world model with the data
             data = self.receive()
             self.update_world_model(data)
+
+            self.a_pair_of_socks.send(self.model)
             
     def receive(self):
         """Receive package and decode."""

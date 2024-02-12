@@ -1,4 +1,5 @@
 import time #we might want to have our own timer
+from multiprocessing import Pipe
 
 class Model:
     def __init__(self):
@@ -20,11 +21,9 @@ class Model:
         self.isYellow = None
         
         # currently not used, but will be used in the future (maybe)
-        self.ball_position = None
+        self.balls = None
         self.our_robots = {} # Dictionary with robot IDs as keys and positions as values
         self.opponent_robots = {} # Similar structure for opponent robots
-          
-
     
     def update_detection(self,detection):
         """_summary_
@@ -63,11 +62,13 @@ class Model:
         __REMARKS__
             This function only works with one ball on field
         """
-        self.ball_position = None
+        self.balls = {}
         # if the field has at least 1 ball
         for ball in balls:
             # updates this module's ball position
-            self.ball_position = (ball.x, ball.y)
+            ball_position = (ball.x, ball.y)
+            self.balls[ball] = ball_position
+            print(self.balls)
             
         #return self.ball_position
     

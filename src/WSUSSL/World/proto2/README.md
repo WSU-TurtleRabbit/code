@@ -19,7 +19,7 @@
             - x
             - y
             - z
-            = pixel_x
+            - pixel_x
             - pixel_y
         3. Detection of each Robot (in each team) [robot_yellow,robot_blue]
             - confidence

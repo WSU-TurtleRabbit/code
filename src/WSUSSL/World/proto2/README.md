@@ -7,6 +7,12 @@
 # SSL - Vision 
     Contains : 
     1. Detection Data
+        #### How it works :
+        The ssl-vision can / most likely have more than one camera operating at the same time.
+        There will be 4 different outputs from at most 4 different cameras, and they all have the same frame number, timecapture, timesent.
+
+        Due to time and ability limitation, we should only consider where there's only one camera
+
         1. frame Data 
             - frame_number
             - t_capture 

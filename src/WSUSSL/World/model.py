@@ -19,7 +19,7 @@ class Model:
         #     self.isYellow = False
 
         self.isYellow = None
-        
+        self.cameras = list()
         # currently not used, but will be used in the future (maybe)
         self.balls = None
         self.our_robots = {} # Dictionary with robot IDs as keys and positions as values
@@ -36,13 +36,23 @@ class Model:
             all_yellow : stores all yellow team robot ID and position.
             all_blue : stores all blue team robot ID and position.
         """
-        self.frameNum = detection.frame_number
-        #self.ball_data = detection.balls
+        print(detection)
+        self.frame_number = detection.frame_number
+        self.t_capture = detection.t_capture
+        self.t_sent = detection.t_sent
+        self.count_camera(detection.camera_id)
+        self.camera_num = len(self.cameras)
         self.extract_ball_position(detection.balls)
         self.all_yellow = self.extract_all_robots_pos(detection.robots_yellow)
         self.all_blue = self.extract_all_robots_pos(detection.robots_blue)
-        #print(self.all_yellow)
-
+        print(f"yellow :{self.all_yellow}")
+        print(f"blue :{self.all_blue}")
+        
+    def count_camera(self,cameraid):
+        if cameraid not in self.cameras:
+            self.cameras.append(cameraid)
+        
+            
     def extract_ball_position(self, balls):
         """_summary_
         This function tries to read ball data from detection.data
@@ -63,12 +73,14 @@ class Model:
             This function only works with one ball on field
         """
         self.balls = {}
+        i = 0
         # if the field has at least 1 ball
         for ball in balls:
+            i +=1
             # updates this module's ball position
-            ball_position = (ball.x, ball.y)
-            self.balls[ball] = ball_position
-            print(self.balls)
+            #ball_position = (ball.x, ball.y)
+            self.balls[str(i)] = {"c":ball.confidence,"x":ball.x,"y":ball.y,"px":ball.pixel_x,"py":ball.pixel_y}
+           # print(self.listofballs)
             
         #return self.ball_position
     
@@ -82,11 +94,14 @@ class Model:
         r = {}
         for robot in robots:
             s = {}
+            s["c"] = robot.confidence
             s["x"] = robot.x 
             s["y"] = robot.y
             s["o"] = robot.orientation
+            s["px"] = robot.pixel_x
+            s["py"] = robot.pixel_y
             r[str(robot.robot_id)] = s
-        # print(r) #debug
+        
         return r
 
         
@@ -97,42 +112,75 @@ class Model:
         Args:
             geometry (data): data about field
         """
-        print("Nothing is here, working in progress")
-        self.field = geometry.field
-        #self.lines = extract_field_lines(geometry.field_lines)
-
+        print("updating field geometry data ...")
+        field = geometry.field
+        self.field_length = field.field_length
+        self.field_width = field.field_width
+        self.goal_width = field.goal_width
+        self.goal_depth = field.goal_depth
+        self.boundary_width = field.boundary_width
+        #fieldlines and data
+        self.lines = {}
+        self.arc = {}
+        self.extract_field_lines(field.field_lines)
+        self.extract_field_arc(field.field_arcs)
         
     def extract_field_lines(self, lines):
         for line in lines:
-            print("help")
-            
+            name = line.name
+            p1 = (line.p1.x, line.p1.y)
+            p2 = (line.p2.x, line.p2.y)
+            self.lines[name]={"p1":p1, "p2": p2,"thickness":line.thickness}
+        print(self.lines)
+    
+    def extract_field_arc(self,arcs):
+        for arc in arcs:
+            center = (arc.center.x, arc.center.y)
+            self.arc[arc.name] = {"center":center,"radius":arc.radius,"a":(arc.a1,arc.a2),"thickness":arc.thickness} 
+        print(self.arc)
 
+    # def update_ball_position(self, position):
+    #     """
+    #     Update the position of the ball.
+    #     :param position: A tuple (x, y) representing the ball's position.
+    #     """
+    #     print("Please do not use this")
+    #     self.ball_position = position
 
-    def update_ball_position(self, position):
-        """
-        Update the position of the ball.
-        :param position: A tuple (x, y) representing the ball's position.
-        """
-        print("Please do not use this")
-        self.ball_position = position
-
-    def update_robot_position(self, robot_id, position, is_our_team):
-        """
-        Update the position of a robot.
-        :param robot_id: Identifier for the robot.
-        :param position: A tuple (x, y) representing the robot's position.
-        :param is_our_team: Boolean indicating if the robot is on our team.
-        """
-        if is_our_team:
-            self.our_robots[robot_id] = position
-        else:
-            self.opponent_robots[robot_id] = position
+    # def update_robot_position(self, robot_id, position, is_our_team):
+    #     """
+    #     Update the position of a robot.
+    #     :param robot_id: Identifier for the robot.
+    #     :param position: A tuple (x, y) representing the robot's position.
+    #     :param is_our_team: Boolean indicating if the robot is on our team.
+    #     """
+    #     if is_our_team:
+    #         self.our_robots[robot_id] = position
+    #     else:
+    #         self.opponent_robots[robot_id] = position
 
     def get_ball_position(self):
+        """_summary_
+            This functions retrieves the ball x and y values
+            If there are more than 1 ball on the field, 
+            it will return the first ball only
+            
+            Usage :
+            e.g. 
+                1. gets all 3 data
+                ball,ball_x,ball_y = model.get_ball_position()
+                2. gets ball's x and y data
+                _,ball_x,ball_y = model.get_ball_position()
+                3. gets ball's dictionary only 
+                ball,_,_ = model.get_ball_position()
+        Returns:
+            1. Dictionary
+            2. ball x position
+            3. ball y position
         """
-        Return the current position of the ball.
-        """
-        return self.ball_position
+        ball_x = self.balls["1"]["x"]
+        ball_y = self.balls["1"]["y"]
+        return self.balls, ball_x, ball_y
 
     def get_robot_position(self, robot_id, is_our_team):
         """

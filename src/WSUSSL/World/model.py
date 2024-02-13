@@ -10,14 +10,7 @@ class Model:
         Param:
             isYellow: is a boolean to identify if our team is yellow or not.
         """
-        # identifying whether using GRsim or SSLvision
-
-        # self.team_color = input('team color : ')
-        # if(self.team_color == 'y'):
-        #     self.isYellow = True
-        # else:
-        #     self.isYellow = False
-
+        self.history = list()
         self.isYellow = isYellow
         self.cameras = list()
         # currently not used, but will be used in the future (maybe)
@@ -34,9 +27,11 @@ class Model:
             detection: data about frames, robots and balls
         Params:
             frameNum: gets the current frame number.
+            t_capture: the time that the frame was captured
+            t_sent: the time that frame was sent.
+            camera_num : number of camera used in app
             ball_position: sets ball's x,y position.
-            all_yellow : stores all yellow team robot ID and position.
-            all_blue : stores all blue team robot ID and position.
+            
         """
         print("updating field detection data ...")
         self.frame_number = detection.frame_number
@@ -48,12 +43,16 @@ class Model:
         self.update_team(detection.robots_yellow,detection.robots_blue)
         self.print_to_file()
         print(self.get_robot_position(2,True))
+        # frame_data[str(frame_number)] = self
+        # self.history.append(frame_data)
+        # if (len(self.history) > 5):
+        #     self.history.pop(0)
     
         
     # working in progress
     def update_geometry(self,geometry):
         """_summary_
-            Retrieves data about the field
+            Retrieves geometry data about the field and stores in the world_model.
         Args:
             geometry (data): data about field
         """
@@ -71,6 +70,7 @@ class Model:
         self.extract_field_arc(field.field_arcs)
             
     def update_team(self,yellow_team, blue_team):
+        
         # Extract robot positions
         self.yellows = self.extract_all_robots_pos(self.yellows, yellow_team)
         self.blues = self.extract_all_robots_pos(self.blues, blue_team)
@@ -97,12 +97,15 @@ class Model:
             dictionary : a dictionary of robots 
         """
         for robot in robots:
+            #stores robot data into the dictionary
             s = {"c":robot.confidence, "x":robot.x, "y":robot.y, "o":robot.orientation, "px": robot.pixel_x, "py":robot.pixel_y}
             robotlist[str(robot.robot_id)] = s
+            
+        #sorts the robot list according to it's id
         sorted_robotlist = {k: robotlist[k] for k in sorted(robotlist)}
         return sorted_robotlist
         
-        #print(r)  
+        #print(r)  #debug
     
     def extract_ball_position(self, balls):
         """_summary_
@@ -119,9 +122,6 @@ class Model:
 
         Returns:
             ball_position: returns ball position as a tuple
-
-        __REMARKS__
-            This function only works with one ball on field
         """
         self.balls = {}
         i = 0

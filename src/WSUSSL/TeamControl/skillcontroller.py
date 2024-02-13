@@ -22,9 +22,9 @@ class SkillControl:
     #     while True:
     #         self.world_model = self.world_pipe.recv()
 
-    def select_skill(self):
+    def select_skill(self, world_model):
         # Logic to select the appropriate skill based on the world model
-        self.current_skill = self.skills[0]
+        self.current_skill = self.skills[0](world_model)
         self.current_skill.initialise()
 
     def run_skill_loop(self):
@@ -32,14 +32,15 @@ class SkillControl:
             if self.world_pipe.poll():
                 self.world_model = self.world_pipe.recv()
                 print("skills now")
-                #self.select_skill()
-                #if not self.current_skill.is_final():
-                    #print("skill loop")
-                    #action = self.current_skill.execute()
-                    #self.skill_pipe.send(action)
+                self.select_skill(self.world_model)
+                if not self.current_skill.is_final():
+                    print("skill loop")
+                    action = self.current_skill.execute()
+                    print(action)
+                    # self.skill_pipe.send(action)
 
                     # todo: now send this action to the robot
-                    #time.sleep(5)  # Skill execution rate
+                    time.sleep(1)  # Skill execution rate
 
     def start(self):
         # Start the WorldModel update loop in a separate thread

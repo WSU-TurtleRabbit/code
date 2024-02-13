@@ -1,4 +1,5 @@
 from WSUSSL.World.model import Model as wm 
+from WSUSSL.Shared.action import Action
 __all__ = []
 
 class BaseSkill:
@@ -48,8 +49,13 @@ class BaseSkill:
 
         # Execute the state's action
         state_function = self.states[self.current_state]
+        action = None
         if callable(state_function):
-            state_function()
+            action = state_function()
         else:
             raise NotImplementedError(f'Action for state {self.current_state} is not implemented')
+        
+        if not isinstance(action, Action):
+            raise TypeError(f'state_function() needs to return an object `Action`, got {action.__class__}')
+        return action
             

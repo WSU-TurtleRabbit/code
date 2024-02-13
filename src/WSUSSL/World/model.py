@@ -26,7 +26,7 @@ class Model:
         self.blues = {}
         self.our_robots = {} # Dictionary with robot IDs as keys and positions as values
         self.opponent_robots = {} # Similar structure for opponent robots
-    
+   
     def update_detection(self,detection):
         """_summary_
             This function is used to retrieve all "detection" data from ssl-vision-cli (terminal)
@@ -48,13 +48,62 @@ class Model:
         self.update_team(detection.robots_yellow,detection.robots_blue)
         self.print_to_file()
         print(self.get_robot_position(2,True))
+    
         
+    # working in progress
+    def update_geometry(self,geometry):
+        """_summary_
+            Retrieves data about the field
+        Args:
+            geometry (data): data about field
+        """
+        #print("updating field geometry data ...")
+        field = geometry.field
+        self.field_length = field.field_length
+        self.field_width = field.field_width
+        self.goal_width = field.goal_width
+        self.goal_depth = field.goal_depth
+        self.boundary_width = field.boundary_width
+        #fieldlines and data
+        self.lines = {}
+        self.arc = {}
+        self.extract_field_lines(field.field_lines)
+        self.extract_field_arc(field.field_arcs)
+            
+    def update_team(self,yellow_team, blue_team):
+        # Extract robot positions
+        self.yellows = self.extract_all_robots_pos(self.yellows, yellow_team)
+        self.blues = self.extract_all_robots_pos(self.blues, blue_team)
+        
+        # Determine team colors
+        our_team = self.yellows if self.isYellow else self.blues
+        opponent_team = self.blues if self.isYellow else self.yellows
+
+        # Assign robots to our team and opponent team
+        self.our_robots = our_team
+        self.opponent_robots = opponent_team
+         
     def count_camera(self,cameraid):
         self.c_camera = str(cameraid)
         if cameraid not in self.cameras:
             self.cameras.append(cameraid)
+    
+       
+    def extract_all_robots_pos(self,robotlist,robots):
+        """_summary_
+            This funtion is used to break down a team's robot id and position, 
+            and store them in a new dictionary.
+        Returns:
+            dictionary : a dictionary of robots 
+        """
+        for robot in robots:
+            s = {"c":robot.confidence, "x":robot.x, "y":robot.y, "o":robot.orientation, "px": robot.pixel_x, "py":robot.pixel_y}
+            robotlist[str(robot.robot_id)] = s
+        sorted_robotlist = {k: robotlist[k] for k in sorted(robotlist)}
+        return sorted_robotlist
         
-            
+        #print(r)  
+    
     def extract_ball_position(self, balls):
         """_summary_
         This function tries to read ball data from detection.data
@@ -86,54 +135,10 @@ class Model:
             
         #return self.ball_position
     
-    def update_team(self,yellow_team, blue_team):
-        self.yellows = self.extract_all_robots_pos(self.yellows,yellow_team)
-        self.blues = self.extract_all_robots_pos(self.blues,blue_team)
-        if self.isYellow:
-            self.our_robots = self.yellows
-            self.opponent_robots = self.blues
-        else:
-            self.our_robots = self.blues
-            self.opponent_robots = self.yellows
-        print("us: ",self.our_robots)
-        print("enemy : ",self.opponent_robots)
     
-    def extract_all_robots_pos(self,robotlist,robots):
-        """_summary_
-            This funtion is used to break down a team's robot id and position, 
-            and store them in a new dictionary.
-        Returns:
-            dictionary : a dictionary of robots 
-        """
-        for robot in robots:
-            s = {"c":robot.confidence, "x":robot.x, "y":robot.y, "o":robot.orientation, "px": robot.pixel_x, "py":robot.pixel_y}
-            robotlist[str(robot.robot_id)] = s
-        sorted_robotlist = {k: robotlist[k] for k in sorted(robotlist)}
-        return sorted_robotlist
-        
-        #print(r)
+   
 
     
-        
-    # working in progress
-    def update_geometry(self,geometry):
-        """_summary_
-            Retrieves data about the field
-        Args:
-            geometry (data): data about field
-        """
-        #print("updating field geometry data ...")
-        field = geometry.field
-        self.field_length = field.field_length
-        self.field_width = field.field_width
-        self.goal_width = field.goal_width
-        self.goal_depth = field.goal_depth
-        self.boundary_width = field.boundary_width
-        #fieldlines and data
-        self.lines = {}
-        self.arc = {}
-        self.extract_field_lines(field.field_lines)
-        self.extract_field_arc(field.field_arcs)
         
     def extract_field_lines(self, lines):
         for line in lines:

@@ -187,18 +187,22 @@ class grsim_coms(Receiver):
         match port_type:
             case "command":
                 port = self.command_port
+                send_sock = self.command_socket
                 #message = grSim_commands()
             case "control":
                 port = self.control_port
+                send_sock = self.control_socket
             case "blue":
                 port = self.blue_control_port
+                send_sock = self.blue_control_socket
                 #message = grSim_robot_command()
             case "yellow":
                 port = self.yellow_control_port
+                send_sock = self.yellow_control_socket
                 #message = grSim_robot_command()
 
                              
-        self.send_sock.sendto(encoded_message, (self.vision_ip_addr, port))
+        send_sock.sendto(encoded_message, (self.vision_ip_addr, port))
 
     @staticmethod
     def grSim_robot_command(id, kickspeedx, kickspeedz, veltangent, velnormal,

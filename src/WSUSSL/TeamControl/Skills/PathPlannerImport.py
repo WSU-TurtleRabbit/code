@@ -2,8 +2,11 @@ from WSUSSL.TeamControl.Skills.baseskill import BaseSkill
 import random
 from WSUSSL.Shared.action import Action
 
+# This is not ready to be used
+
 class PathPlannerImport(BaseSkill):
     def __init__(self, world_model):
+        print("This is still under development")
         super().__init__(world_model)
         self.add_state('start', self.start_action)
         self.add_state('run', self.run_action)

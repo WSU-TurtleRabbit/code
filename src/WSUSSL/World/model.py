@@ -11,6 +11,7 @@ class Model:
             isYellow: is a boolean to identify if our team is yellow or not.
         """
         self.history = list()
+        self.frame_data = {}
         self.isYellow = isYellow
         self.cameras = list()
         # currently not used, but will be used in the future (maybe)
@@ -41,12 +42,13 @@ class Model:
         self.camera_num = len(self.cameras)
         self.extract_ball_position(detection.balls)
         self.update_team(detection.robots_yellow,detection.robots_blue)
+        
         self.print_to_file()
-        print(self.get_robot_position(2,True))
-        # frame_data[str(frame_number)] = self
-        # self.history.append(frame_data)
-        # if (len(self.history) > 5):
-        #     self.history.pop(0)
+        #print(self.get_robot_position(2,True))
+        self.frame_data[str(self.frame_number)] = self
+        self.history.append(self.frame_data)
+        if (len(self.history) > 5):
+            self.history.pop(0)
     
         
     # working in progress
@@ -56,7 +58,7 @@ class Model:
         Args:
             geometry (data): data about field
         """
-        #print("updating field geometry data ...")
+        print("updating field geometry data ...")
         field = geometry.field
         self.field_length = field.field_length
         self.field_width = field.field_width
@@ -68,6 +70,7 @@ class Model:
         self.arc = {}
         self.extract_field_lines(field.field_lines)
         self.extract_field_arc(field.field_arcs)
+        return
             
     def update_team(self,yellow_team, blue_team):
         

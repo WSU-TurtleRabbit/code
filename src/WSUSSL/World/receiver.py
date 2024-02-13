@@ -67,8 +67,8 @@ class Receiver:
         while True: #while it is true, it will always listen and update world model with the data
             data = self.receive()
             self.update_world_model(data)
-
             self.world_pipe.send(self.model)
+            data = ""
             
     def receive(self):
         """Receive package and decode."""

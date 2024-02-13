@@ -21,18 +21,18 @@ if __name__ ==  '__main__':
     
     world = Model()
     
-    # r = int(input("1. ssl-vision 2.grsim"))
-    # match r:
-    #     case 1:
-    #         receiver = ssl_vision_receiver(world)
-    #     case 2:
-    #         receiver = grsim_coms(world)
-
-    match kwargs['rev']:
+    r = int(input("1. ssl-vision 2.grsim"))
+    match r:
         case 1:
             receiver = ssl_vision_receiver(world)
         case 2:
             receiver = grsim_coms(world)
+
+    # match kwargs['rev']:
+    #     case 1:
+    #         receiver = ssl_vision_receiver(world)
+    #     case 2:
+    #         receiver = grsim_coms(world)
     
     world_pipe = receiver.pipe()
     world_update = Process(target=receiver.listen_world)
@@ -41,7 +41,7 @@ if __name__ ==  '__main__':
     skill_pipe = skills.pipe()
     team_controller = Process(target=skills.run_skill_loop)
 
-    server = Server(skill_pipe)
+    server = Server(skill_pipe,0)
 
     robot_receive = Process(target=server.listen_udp)
     send_action_to_robot = Process(target=server.run)

@@ -33,15 +33,19 @@ if __name__ ==  '__main__':
     #         receiver = ssl_vision_receiver(world)
     #     case 2:
     #         receiver = grsim_coms(world)
-    
-    new_world = receiver.pipe()
-    update_world = Process(target=receiver.listen_world)
+    world_pipe = receiver.pipe()
+    world_update = Process(target=receiver.listen_world)
+
+    skills = SkillControl(world_pipe, [])
+    skill_controller = Process(target=skills.run_skill_loop)
 
    
 
-    update_world.start()
+    world_update.start()
+    skill_controller.start()
 
-    update_world.join()
+    world_update.join()
+    skill_controller.join()
 
     print('Whoops??! Something went really wrong for this to print?!')
 

@@ -17,11 +17,12 @@ class PathPlannerImport(BaseSkill):
         self.counter = 0
 
     def start_action(self):
-        print("SampleSkill: Start action")
+        print("Path Planner: Start action")
         # 1. take imports from path planner
-        # 2. process it onto the skill
-        # 3. compile and run action
-        self.counter = 0
+        #get robot_positions => mark them as obstacles
+        # run prm() with robot obstacles
+        # retrieve data
+        # compile and run robot to destination.
         self.transition_to('run')
         if random.randint(0,1):
             return Action(0,0,0,False,0)

@@ -1,21 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 
 '''
     Current limitations/things to work on:
     - We do not need all of the plotting for the actualy use case. This was just to check
       the results
-    - Passing the x and y coordinates of the ball to the script is more complicated than
-      in the example here. The positions and the frame number must be read in from SLL vision.
-      The frame rates might not start at 0 so taking the 6th entry of the coordinate set might
-      not be the correct frame.
     - We have to change the GOAL_WIDTH to the actual goal width
     - The goalie line is the line on which the goalie is supposed to move
     - The script calculates the ball velocity but it is not used yet.
-    - We might need to change the team yellow etc. setting. It is just a variable to remember
-      that we need to decide which goal is ours.
 
     Using that script:
     - When the ball intersects with the goal line and the ball is moving towards the ball give
@@ -27,19 +20,15 @@ from sklearn.linear_model import LinearRegression
 '''
 
 # PARAMETERS
-GOAL_WIDTH = 1600 #mm
+GOAL_WIDTH = 2760 #mm
 FIELD_WIDTH = 2760 #mm
 FIELD_LENGTH = 5040 #mm
-ROBOT_RADIUS = 90 #mm -> Check that value
-BALL_RADIUS = 21.35 #mm
 FRAME_RATE = 60 #Hz
-TEAM_YELLOW = True
-GOALIE_LINE = -FIELD_LENGTH/2 + 100 #mm #On the other lide of the field if we are the other team
-GOALIE_LINE = -FIELD_LENGTH/2 + 100 if TEAM_YELLOW else FIELD_LENGTH/2 - 100
+GOALIE_LINE = -FIELD_LENGTH/2 + 200 #mm #On the other side of the field if we are the other team
 
 def plot_trajectory_w_goal(trajectory, ball_positions_x, ball_positions_y, intersects_line, intersection_point, direction_info, velocity):
     '''
-        This function plots the trajectory, the goal field and whether there is an 
+        This function plots the trajectory, the goal line/area and whether there is an 
         intersection or not and the direction of the ball movement. All coodinates
         are in the field coordinate system and have the unit milimeters.
 
@@ -89,40 +78,49 @@ def plot_trajectory_w_goal(trajectory, ball_positions_x, ball_positions_y, inter
     plt.gca().set_aspect('equal', adjustable='box')
     plt.show()
 
-def predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number, num_samples):
+def predict_trajectory(history, num_samples):
     '''
-        This function takes are input a list of ball positions and uses the last 5 ball positions
+        This function takes are input a list of ball positions and uses the last num_samples ball positions
         to fit a ball trajectory by applying a linear regression model. We then check whether this
         trajectory intercepts the goal line. If it does we send this information and the interception
         point to the goalie so the goalie can block the ball.
 
+        History example: [{'x': -118.86381, 'y': 1343.0244}, {'x': -118.86381, 'y': 1343.0244}, ...]
+
         input:
-            ball_positions_x: x coordinates (in world coordinate system) of the detected ball
-            ball_positions_y: y coordinates (in world coordinate system) of the detected ball
-            current_frame_number: current frame number
+            history: history of the last ball positions
             num_samples: number of samples that should be used to estimate the trajectory
         output:
             trajectory_y_at_goal_line: y value where the estimated trajectory intersects
                                        the goal line.
             direction_info: String with information whether the ball is moving towards 
                             our goal, away from our goal or perpendicular to our goal.
+            trajectory: x and y values of the ball trajectory
+            velocity: calculated ball velocity in m/s
     '''
     # Ensure we have at least two points to fit a line
-    if len(ball_positions_x) < 2:
-        return None, None, None, None, None
+    if len(history) < 2:
+        return None, None, None, None
+    
+    ball_positions_x = []
+    ball_positions_y = []
 
-    # Extract the last 5 frames' ball positions if available, otherwise use all positions
-    if current_frame_number <= num_samples:
-        last_five_ball_positions_x = ball_positions_x[:current_frame_number]
-        last_five_ball_positions_y = ball_positions_y[:current_frame_number]
+    # read ball positions from history
+    for coord in history:
+        ball_positions_x.append(coord["x"])
+        ball_positions_y.append(coord["y"])  
+
+    if len(history) <= num_samples:
+        # use all available ball positions
+        last_ball_positions_x = ball_positions_x
+        last_ball_positions_y = ball_positions_y
     else:
-        last_five_ball_positions_x = ball_positions_x[current_frame_number - num_samples:current_frame_number]
-        last_five_ball_positions_y = ball_positions_y[current_frame_number - num_samples:current_frame_number]
-
+        # use last num_samples ball positions
+        last_ball_positions_x = ball_positions_x[-num_samples:]
+        last_ball_positions_y = ball_positions_y[-num_samples:]
     # Fit polynomial regression to the last frames' ball positions
     model = LinearRegression()
-    model.fit(np.array(last_five_ball_positions_x).reshape(-1, 1), last_five_ball_positions_y)
-
+    model.fit(np.array(last_ball_positions_x).reshape(-1, 1), last_ball_positions_y)
 
     # Generate trajectory points
     x_values = np.linspace(-FIELD_LENGTH/2, FIELD_LENGTH/2, 20) 
@@ -130,24 +128,24 @@ def predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number,
 
     current_ball_position_x = ball_positions_x[-1]  # Current ball position
 
-    if TEAM_YELLOW:
-        if current_ball_position_x > last_five_ball_positions_x[-1]:  # If current x-coordinate is greater than the previous one
+    # Direction info depends on what side of the field the goal is on
+    if GOALIE_LINE < 0:
+        if current_ball_position_x > last_ball_positions_x[-1]:  # If current x-coordinate is greater than the previous one
             direction_info = "Moving away from the goal"
-        elif current_ball_position_x < last_five_ball_positions_x[-1]:  # If current x-coordinate is smaller than the previous one
+        elif current_ball_position_x < last_ball_positions_x[-1]:  # If current x-coordinate is smaller than the previous one
             direction_info = "Moving towards the goal"
         else:
             direction_info = "Moving perpendicular to the goal/ not moving"
     else:
-        if current_ball_position_x < last_five_ball_positions_x[-1]:  # If current x-coordinate is greater than the previous one
+        if current_ball_position_x < last_ball_positions_x[-1]:  # If current x-coordinate is greater than the previous one
             direction_info = "Moving away from the goal"
-        elif current_ball_position_x > last_five_ball_positions_x[-1]:  # If current x-coordinate is smaller than the previous one
+        elif current_ball_position_x > last_ball_positions_x[-1]:  # If current x-coordinate is smaller than the previous one
             direction_info = "Moving towards the goal"
         else:
             direction_info = "Moving perpendicular to the goal/ not moving"
     
     # Find the y-values of the trajectory at the goal line x-coordinate
     trajectory_y_at_goal_line = model.predict(np.array([GOALIE_LINE]).reshape(-1, 1))
-
 
     # Calculate velocity
     num_positions = len(ball_positions_x)
@@ -173,7 +171,7 @@ def predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number,
 
 def goal_intersection(trajectory_y_at_goal_line):
     '''
-        This function checks whether the estimates ball trajectory goal through the goal 
+        This function checks whether the estimates ball trajectory goes through the goal 
         and whether the ball is moving towards the goal at all.
 
         input:
@@ -191,37 +189,7 @@ def goal_intersection(trajectory_y_at_goal_line):
     intersection_point = None
     if intersects_line:
         intersection_point = (GOALIE_LINE, round(trajectory_y_at_goal_line.item()))
-
+    print(intersection_point, intersects_line)
     return intersects_line, intersection_point
 
-
-def main():
-    # Example usage:
-    # This is a set of x and y ball positions (on per frame) which in the real case have to be read from SSL vision.
-    examples = [
-        ("Example 1", np.linspace(2000, -300, 6), np.linspace(-200, -100, 6)),
-        ("Example 2", np.linspace(2300, -400, 6), np.linspace(200, 400, 6)),
-        ("Example 3", np.linspace(1000, -500, 6), np.linspace(-1200, 1200, 6)),
-        ("Example 4", np.linspace(100, -100, 6), np.linspace(-1000, -1300, 6)),
-        ("Example 5", np.linspace(-300, 0, 6), np.linspace(-200, -100, 6)),
-    ]
-
-    # Iterate through examples
-    for example_name, ball_positions_x, ball_positions_y in examples:
-        print("Example:", example_name)
-
-        current_frame_number = 5  # Current frame number
-        num_samples = 3 # number of frames to use to estimate the trajectory
-
-        # estimate the trajectory of the moving ball
-        trajectory, direction_info, trajectory_y_at_goal_line, velocity = predict_trajectory(ball_positions_x, ball_positions_y, current_frame_number, num_samples)
-        # check whether the estimated ball trajectory intersects with the goal line
-        intersects_line, intersection_point = goal_intersection(trajectory_y_at_goal_line)
-
-        plot_trajectory_w_goal(trajectory, ball_positions_x, ball_positions_y, intersects_line, intersection_point, direction_info, velocity)
-
-    # Next step: make the goalie acts based on the fact whether the estimated ball trajectory intersects the ball line
-
-if __name__ == '__main__':
-    main()
 

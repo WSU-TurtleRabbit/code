@@ -1,7 +1,8 @@
 # Low level skills
 This is a set of low level skills and utility scripts that are not yet integrated in the code base.
 
-## ball_trajectory.py
+## Goal Keeping
+### ball_trajectory.py
 This script estimates the trajectory of a moving ball using linear regression based on the last observed ball positions. Furthermore, it determines the direction the ball is moving (based on its x coordinate), the velocity the ball is moving at (based on the traveled distance between two consecutive frames) and the whether or not the ball is going into the goal following its estimated trajectory. If the ball is estimated to go into the goal the script furthermore returns the position at which the ball is going into the goal so the goalie can block it.
 
 This is useful for multiple scenarios. First of all when an adversary player has the ball and kicks it towards our goal we can estimate where the ball is going to go into the goal and we can send this position to the goalie so the goalie can move to that position and block the ball from going into the goal.
@@ -17,6 +18,17 @@ Example of an estimated ball trajectory where the ball is not going into the goa
 ![Example of the ball trajectory estimation - not going into the goal](./images/BallTrajectory_ex2.png)
 
 Note: In the script are a number of parameters that might have to be changed such as the goal width etc.
+
+Work to do:
+- The goalie moves more than expected. Check the ball positions and estimated trajectories for the case where the ball is not moving. My assumption is that the ball positions are slightly different from frame to frame even though the ball does not move. This means that the regression model will estimate a trajectory and the goalie will go to that position. 
+- Play around with the arguments for go_towards_target (velocity, slow_threshold and stop_threshold). This may help to make the goalie better. 
+- When you start the code for the goalie agent and there is no ball on the field it crashed. That is probably because the history of ball position only contains None values. Add something to catch cases where there is no ball. The goalie should just stay in the center of the goal in those cases.
+
+### goalie_agent.py
+Goalie agent which defines a goalie that will stay in the center of the goal unless a ball is estimated to go into the goal. If the goal is estimated to go into the goal the goalie will go to that position to block it. The agent code includes the trajectory estimation as well as the command to move to the estimated position of the ball going into the ball. 
+
+### agent_simulator.py
+This code includes an example of how a goalie agent can be used.
 
 ## coord_trans.py
 This script implement the transformation of the coordinate systems (local robot coordinate system vs. field coordinate system).

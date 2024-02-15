@@ -28,7 +28,7 @@ class Simulation():
         self.history = list()
 
         self.grSimSender = grSimCommandSender("127.0.0.1", 20011)
-        self.physicalRobotSender = PhysicalRobotCommandSender("172.20.10.10", 5005)
+        self.physicalRobotSender = PhysicalRobotCommandSender("172.20.10.13", 5005)
         #self.physicalRobotSender4 = PhysicalRobotCommandSender("172.20.10.13", 5005)
 
     @staticmethod
@@ -140,10 +140,10 @@ class Simulation():
 
 
 # Initialize active agents
-#general_agent = PathGeneralAgent(1)
+#general_agent = GeneralAgent(1)
 #general_agent4 = PathGeneralAgent(4)
 #sim_path_agent = SimulationAgent(5)
-goalie_agent = GoalieAgent(id=4)
+goalie_agent = GoalieAgent(id=1)
 
 sim = Simulation([goalie_agent])
 sim.run()

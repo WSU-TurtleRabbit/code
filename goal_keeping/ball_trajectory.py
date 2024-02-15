@@ -24,7 +24,8 @@ GOAL_WIDTH = 2760 #mm
 FIELD_WIDTH = 2760 #mm
 FIELD_LENGTH = 5040 #mm
 FRAME_RATE = 60 #Hz
-GOALIE_LINE = -FIELD_LENGTH/2 + 200 #mm #On the other side of the field if we are the other team
+#GOALIE_LINE = -FIELD_LENGTH/2 + 200 #mm #On the other side of the field if we are the other team
+GOALIE_LINE = -1200 # When it was too close to the field edge it did not work
 
 def plot_trajectory_w_goal(trajectory, ball_positions_x, ball_positions_y, intersects_line, intersection_point, direction_info, velocity):
     '''
@@ -118,7 +119,7 @@ def predict_trajectory(history, num_samples):
         # use last num_samples ball positions
         last_ball_positions_x = ball_positions_x[-num_samples:]
         last_ball_positions_y = ball_positions_y[-num_samples:]
-    # Fit polynomial regression to the last frames' ball positions
+
     model = LinearRegression()
     model.fit(np.array(last_ball_positions_x).reshape(-1, 1), last_ball_positions_y)
 
@@ -147,24 +148,26 @@ def predict_trajectory(history, num_samples):
     # Find the y-values of the trajectory at the goal line x-coordinate
     trajectory_y_at_goal_line = model.predict(np.array([GOALIE_LINE]).reshape(-1, 1))
 
-    # Calculate velocity
-    num_positions = len(ball_positions_x)
-    if num_positions >= 2:
-        # Calculate the change in position between the last two positions
-        delta_x = ball_positions_x[-1] - ball_positions_x[-2]
-        delta_y = ball_positions_y[-1] - ball_positions_y[-2]
+    # VELOCITY CALCULATION COMMENTED OUT FOR NOT BECAUSE NOT USED
+    velocity = None
+    # # Calculate velocity
+    # num_positions = len(ball_positions_x)
+    # if num_positions >= 2:
+    #     # Calculate the change in position between the last two positions
+    #     delta_x = ball_positions_x[-1] - ball_positions_x[-2]
+    #     delta_y = ball_positions_y[-1] - ball_positions_y[-2]
 
-        # Calculate time elapsed between the last two frames
-        time_elapsed = 1 / FRAME_RATE  # In seconds
+    #     # Calculate time elapsed between the last two frames
+    #     time_elapsed = 1 / FRAME_RATE  # In seconds
 
-        # Calculate velocity components
-        velocity_x = delta_x / time_elapsed
-        velocity_y = delta_y / time_elapsed
+    #     # Calculate velocity components
+    #     velocity_x = delta_x / time_elapsed
+    #     velocity_y = delta_y / time_elapsed
 
-        # Calculate magnitude of velocity
-        velocity = np.sqrt(velocity_x ** 2 + velocity_y ** 2)
-    else:
-        velocity = None
+    #     # Calculate magnitude of velocity
+    #     velocity = np.sqrt(velocity_x ** 2 + velocity_y ** 2)
+    # else:
+    #     velocity = None
 
     return list(zip(x_values, y_values)), direction_info, trajectory_y_at_goal_line, velocity
 

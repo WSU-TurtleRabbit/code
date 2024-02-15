@@ -43,7 +43,7 @@ In order to kick the ball or receive a pass the robots kicker must point into th
 This function returns the target position for a robot that wants to aim and shoot the ball towards the goal or to another robot (passing the ball).
 
 NEXT STEPS:
-1. Move robot to robot position
+1. Move robot to target position (maybe see ball as an obstacle so robot does not run over the ball it wants to shoot when it is going to the target position)
 2. Use turn_to_ball function
 3. Move slightly (slowly) forward so the kicker is touching the ball
 4. Kick

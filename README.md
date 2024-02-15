@@ -47,3 +47,9 @@ NEXT STEPS:
 2. Use turn_to_ball function
 3. Move slightly (slowly) forward so the kicker is touching the ball
 4. Kick
+
+## Get ready to get a ball passed idea
+- Agents that receive passes should always keep their kicker oriented towards the ball -> use turn_to_ball.py
+- Agents that receive passes should aways check whether the line between them and the ball is collision free -> use CheckLineCollision from path planner
+    - if path is obstructed the agents should move so the path is clear
+- It does not make sense that all agents move over the entirety of the field. Agents should have their areas on the field. Check Olivers code for game strategy patterns. Keep that in mind for the position of the agents and where they move to get a clear path.

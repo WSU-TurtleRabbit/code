@@ -7,7 +7,6 @@ from matplotlib.patches import Rectangle
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 import shapely.geometry
-import time
 
 from .Dijkstra import Graph, dijkstra, to_array
 from .Utils import Utils
@@ -39,11 +38,11 @@ class PRMController:
         
     def runPRM(self, initialRandomSeed, saveImage=False):
         seed = initialRandomSeed
-        # Keep resampling if no solution found, up to N_MAX times
-        N_MAX = 10
-        n = 0
-        while (not self.solutionFound and n < N_MAX):
-            n += 1
+        # Keep resampling if no solution found
+        N = 0
+#        while(not self.solutionFound):
+        while (not self.solutionFound and N < 10):
+            N += 1
             print("Trying with random seed {}".format(seed))
             np.random.seed(seed)
 
@@ -60,7 +59,7 @@ class PRMController:
             # Search for shortest path from start to end node - Using Dijksta's shortest path alg
             pointsToEnd, dist = self.shortestPath()
 
-            seed = int(time.time_ns() % 2**32)
+            seed = np.random.randint(1, 100000)
             self.coordsList = np.array([])
             self.graph = Graph()
 
@@ -72,31 +71,18 @@ class PRMController:
 
         return pointsToEnd, dist
 
-    def genCoords(self, N=0, structured=5, radius = 250, k = 6):
-        self.current = self.current.reshape(1, 2)
-        self.destination = self.destination.reshape(1, 2)
-
+    def genCoords(self):
         X = np.random.randint(self.x_min, self.x_max, 
                               size=(self.numOfCoords, 1))
         Y = np.random.randint(self.y_min, self.y_max, 
                               size=(self.numOfCoords, 1))
-
-        # if N >= structured: 
-        #     angles = np.linspace(0, 2 * np.pi, k, endpoint = False)
-        #     X0 = np.clip(self.current[0][0] + radius * np.cos(angles), self.x_min, self.x_max)
-        #     Y0 = np.clip(self.current[0][1] + radius * np.sin(angles), self.y_min, self.y_max)
-        #     X1 = np.clip(self.destination[0][0] + radius * np.cos(angles), self.x_min, self.x_max)
-        #     Y1 = np.clip(self.destination[0][1] + radius * np.sin(angles), self.y_min, self.y_max)
-        #     X0 = np.concatenate((X0,X1)).reshape(-1, 1)
-        #     Y0 = np.concatenate((Y0,Y1)).reshape(-1, 1)
-        #     X = np.concatenate((X,X0), axis=0)
-        #     Y = np.concatenate((Y,Y0), axis=0)
-
         self.coordsList = np.concatenate((X,Y), axis=1)
         # Adding begin and end points
+        self.current = self.current.reshape(1, 2)
+        self.destination = self.destination.reshape(1, 2)
         self.coordsList = np.concatenate(
             (self.coordsList, self.current, self.destination), axis=0)
-        
+
     def checkIfCollisonFree(self):
         collision = False
         self.collisionFreePoints = np.array([])
@@ -146,10 +132,8 @@ class PRMController:
         self.startNode = str(self.findNodeIndex(self.current))
         self.endNode = str(self.findNodeIndex(self.destination))
 
-        if not self.endNode in self.graph.nodes:
-            return None, None
-        
         dist, prev = dijkstra(self.graph, self.startNode)
+
         pathToEnd = to_array(prev, self.endNode)
 
         if(len(pathToEnd) > 1):
@@ -218,11 +202,9 @@ class PRMController:
             return False
 
     def checkPointCollision(self, point):
-        if ((point[0] == self.current[0][0] and point[1] == self.current[0][1]) or
-            (point[0] == self.destination[0][0] and point[1] == self.destination[0][1])):
-            return False
         for obs in self.allObs:
             collision = self.checkCollision(obs, point)
             if(collision):
                 return True
         return False
+    

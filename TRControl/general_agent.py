@@ -10,16 +10,21 @@ class GeneralAgent(agent):
         self.world2robot_fn = world2robot_fn
         self.target_position = None  # Initialize with no target
 
-    def set_target(self, target_position):
-        self.target_position = np.array(target_position)
+    def set_target(self, target_position):        
+        if not any(coord is None for coord in target_position):
+            target_position = super().check_boundary(target_position)
+            self.target_position = np.array(target_position)
+
 
     def act(self, frame):
         if self.target_position is not None:
             robot_data = frame["detection"]["robots_blue"][self.id]
+            print("Target position:", self.target_position)
 
             if robot_data and self.world2robot_fn:
                 orientation = robot_data['orientation'] - pi/2
                 robot_pose = np.array([robot_data['x'], robot_data['y'], orientation])
+                print("Ego position", robot_pose)
                 # Convert target position to robot's coordinate system
                 target_robot = self.world2robot_fn(self.target_position, robot_pose)
 

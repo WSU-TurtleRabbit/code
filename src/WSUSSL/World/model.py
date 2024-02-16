@@ -1,5 +1,7 @@
-import time #we might want to have our own timer
-from multiprocessing import Pipe
+# import time #we might want to have our own timer
+import numpy as np
+from collections import defaultdict
+# from multiprocessing import Pipe
 
 class Model:
     def __init__(self,isYellow = False):
@@ -13,7 +15,7 @@ class Model:
         self.history = list()
         self.frame_data = {}
         self.isYellow = isYellow
-        self.cameras = list()
+        self.camera_data = list()
         # currently not used, but will be used in the future (maybe)
         self.balls = None
         self.yellows = {}
@@ -38,20 +40,44 @@ class Model:
         self.frame_number = detection.frame_number
         self.t_capture = detection.t_capture
         self.t_sent = detection.t_sent
-        self.count_camera(detection.camera_id)
+        self.camera_id = detection.camera_id
+        
+        #counts number of campera
         self.camera_num = len(self.cameras)
-        self.extract_ball_position(detection.balls)
-        self.update_team(detection.robots_yellow,detection.robots_blue)
+        for i in range(self.camera_num) :    
+            self.extract_ball_position(detection.balls)
+            self.update_team(detection.robots_yellow,detection.robots_blue)
+            #updates this camera data
+            self.camera_data[f"camera{self.camera_id}"] = {
+                "balls" : self.balls,
+                "our_robots" : self.our_robots,
+                "opponent_robots" : self.opponent_robots
+            }
+        self.save_data()
         
-        self.print_to_file()
-        #print(self.get_robot_position(2,True))
-        self.frame_data[str(self.frame_number)] = self
-        self.history.append(self.frame_data)
-        if (len(self.history) > 5):
-            self.history.pop(0)
     
+    def save_data(self,average=True,framerate=60,frames_to_save = 5):
+        # print(self.camera_data.keys())
+        # object_count = defaultdict(int)
+        # averaged_camera_data={}
+        # # frame_data.append(self.camera_data)
+        # for key,data in self.camera_data.values():
+        #     averaged_camera_data[key] = {} #init
+        #     for camera_key,camera_value in data.items():
+        #         averaged_camera_data[key][camera_key] = []
+        #         for object_key, object_value in camera_value.items():
+        #             object_count[object_key]+=1
+        #             if object_count >1:
+        #                 averaged_camera_data[key][camera_key][object_key] = np.mean
+
+        #             averaged_camera_data[key][camera_key][object_key]
+        # self.frame[self.frame_number] = averaged_camera_data
+
+        self.history.append(self.frame_data)
+        if (len(self.history) > frames_to_save):
+            self.history.pop(0)
         
-    # working in progress
+    
     def update_geometry(self,geometry):
         """_summary_
             Retrieves geometry data about the field and stores in the world_model.
@@ -86,13 +112,20 @@ class Model:
         self.our_robots = our_team
         self.opponent_robots = opponent_team
          
-    def count_camera(self,cameraid):
-        self.c_camera = str(cameraid)
-        if cameraid not in self.cameras:
-            self.cameras.append(cameraid)
+    def update_robot_status(self, robot_dict, status):
+        for robot in status:
+            robot_id =  robot.robot_id 
+            robot_dict[str(robot_id)] = {
+                "is_infrared" :robot.infrared,
+                "is_flat_kick" : robot.flat_kick,
+                "is_chip_kick" : robot.chip_kick
+            }
+        return robot_dict
     
+    
+
        
-    def extract_all_robots_pos(self,robotlist,robots):
+    def extract_all_robots_pos(self,robot_dict,robots):
         """_summary_
             This funtion is used to break down a team's robot id and position, 
             and store them in a new dictionary.
@@ -101,12 +134,17 @@ class Model:
         """
         for robot in robots:
             #stores robot data into the dictionary
-            s = {"c":robot.confidence, "x":robot.x, "y":robot.y, "o":robot.orientation, "px": robot.pixel_x, "py":robot.pixel_y}
-            robotlist[str(robot.robot_id)] = s
-            
+            s = {
+                "c":robot.confidence, 
+                 "x":robot.x, 
+                 "y":robot.y, 
+                 "o":robot.orientation, 
+                 "px": robot.pixel_x, 
+                 "py":robot.pixel_y}
+            robot_dict[str(robot.robot_id)] = s
         #sorts the robot list according to it's id
-        sorted_robotlist = {k: robotlist[k] for k in sorted(robotlist)}
-        return sorted_robotlist
+        sorted_robot_dict = {k: robot_dict[k] for k in sorted(robot_dict)}
+        return sorted_robot_dict
         
         #print(r)  #debug
     
@@ -138,10 +176,7 @@ class Model:
             
         #return self.ball_position
     
-    
-   
 
-    
         
     def extract_field_lines(self, lines):
         for line in lines:
@@ -201,6 +236,23 @@ class Model:
         except TypeError as te:
             print(f"{te}, Robot Not Found")
             pass
+
+    def get_robot_status(self, robot_id, is_our_team):
+        rid = str(robot_id)
+        try:
+            if is_our_team: # your team
+                robot_status = self.our_robots.get(rid)
+            else: # enemy team
+                robot_status = self.opponent_robots.get(rid)
+            robot_is_ir = robot_status["is_infrared"]
+            robot_is_flat_kick = robot_status["is_flat_kick"]
+            robot_is_chip_kick = robot_status["is_chip_kick"]
+            return robot_is_ir, robot_is_flat_kick, robot_is_chip_kick
+        except TypeError as te:
+            print(f"{te}, Robot Not Found")
+            pass
+
+
     # Additional methods can be added here to provide more functionality
     # like calculating distances between objects, checking for collisions, etc.
     def print_to_file(self):

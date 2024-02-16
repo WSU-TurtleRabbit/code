@@ -1,3 +1,6 @@
+### This file is only used to generate local data for the world model ###
+### Testing purposes Only ###
+
 import socket
 from WSUSSL.World.proto2 import ssl_vision_wrapper_pb2
 from WSUSSL.World.proto2 import ssl_vision_geometry_pb2

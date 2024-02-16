@@ -10,11 +10,18 @@ import time
 
 class SkillControl:
     def __init__(self, world_pipe, skills):
+        """_summary_
+            Skill Control requires an array of skill callables
+            Skill control will then initiate skills
+            Skills will then begin stages : start run finish
+            Skills completed will then move onto the next. 
+        Args:
+            world_pipe (pipe): the multiprocessing pipe : world model from receiver
+            skills (tuple): an array of skill names
+        """
         self.world_pipe = world_pipe
         self.skills = skills  # A collection of skills
         self.current_skill = None
-        #self.update_world_model = update_world_model(world_model)
-
         self.world_model = None
         self.skill_pipe = None
 
@@ -25,16 +32,19 @@ class SkillControl:
     def select_skill(self, world_model):
         # Logic to select the appropriate skill based on the world model
         self.current_skill = self.skills[0](world_model)
+        print("Initialising skills now.")
         self.current_skill.initialise()
 
     def run_skill_loop(self):
         while True:
+            # if there is data in the pipe.
             if self.world_pipe.poll():
+                # updates world model
                 self.world_model = self.world_pipe.recv()
-                print("skills now")
+                print("Selecting skills")
                 self.select_skill(self.world_model)
                 if not self.current_skill.is_final():
-                    print("skill loop")
+                    print("sending skills")
                     action = self.current_skill.execute()
                     print(action)
                     # self.skill_pipe.send(action)

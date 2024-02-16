@@ -44,14 +44,14 @@ Steps what needs to be done to use the robot
   we are using the ssl-vision-client as a submodule, so you should use the "--recursive" option when cloning:
 
 ```
-  git clone --branch base-team-control --recursive git@github.com:WSU-TurtleRabbit/code.git
+  git clone --branch quali-video-code-restructured --recursive git@github.com:WSU-TurtleRabbit/code.git
 ```
 
   If you already cloned the repo, but not recursively, or for a different branch, then you can fix that with these steps:
 
 ```
 cd code
-git checkout base-team-control
+git checkout quali-video-code-restructured
 git submodule update --init --recursive
 ```
 
@@ -62,7 +62,7 @@ git submodule update --init --recursive
   If you have that, build the `ssl-vision-cli` binary like this:
 
 ```
-  cd code/TRControl/ssl-vision-client/cmd/ssl-vision-cli
+  cd code/quali-video-code-restructured/ssl-vision-client/cmd/ssl-vision-cli
   go build
 ```
 

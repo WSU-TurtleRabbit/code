@@ -27,4 +27,5 @@ Steps what needs to be done to use the robot
 - Finetune speed, slow_threshold and stop_threshold of all agents
 - Implement kicker
 - Implement aiming and shooting a ball
+- Implement braking
 - ...

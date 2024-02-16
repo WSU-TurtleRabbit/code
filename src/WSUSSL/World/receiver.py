@@ -1,6 +1,7 @@
 from WSUSSL.World.proto2 import ssl_vision_wrapper_pb2 as wrapper
 from WSUSSL.World.proto2 import grSim_Packet_pb2
 from WSUSSL.World.proto2 import grSim_Commands_pb2
+from WSUSSL.World.proto2 import grSim_Replacement_pb2
 from WSUSSL.World.model import Model as wm # in short of world_model
 
 import socket
@@ -213,12 +214,32 @@ class grsim_coms(Receiver):
             id, kickspeedx, kickspeedz, veltangent, velnormal, velangular, 
             spinner, wheelspeed, wheel1, wheel2, wheel3, wheel4
         )
-    
     @staticmethod
     def grSim_commands(timestamp, isteamyellow, robot_commands):
         return grSim_Commands_pb2.grSim_Commands(
             timestamp, isteamyellow, robot_commands
         )
+    
+    @staticmethod
+    def grSim_robot_replacement(x,y,dir,id,yellowteam:bool,turnon=True):
+        return grSim_Replacement_pb2.grSim_RobotReplacement(
+            x,y,dir,id,yellowteam,turnon
+        )
+    @staticmethod
+    def grSim_ball_replacement(x=0,y=0,vx=0,vy=0):
+        return grSim_Replacement_pb2.grSim_BallReplacement(
+            x,y,vx,vy
+        )
+    def grSim_replacement(ball_replacement=0,robot_replacements=[]):
+        return grSim_Replacement_pb2.grSim_Replacement(
+            ball_replacement,robot_replacements)
+    
+    @staticmethod
+    def grSim_packet(commands=[], replacements=[]):
+        data = grSim_Packet_pb2.grSim_packet(commands,replacements)
+        packet = bytes(data.SerializeToString().encode('utf-8'))
+        return packet
+    
     
 #if __name__ == '__main__':
     #recv = proto2_ssl_vision_py_receiver('127.0.0.1', 50514) #e.g.

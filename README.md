@@ -6,7 +6,10 @@ Explain what agents are
 
 List of agents and what they do:
 - **goalie_agent**: Goalie will stay in the center of the field unless the ball is estimated to go into the goal (based on linear regression using the last observed ball positions) then it is will go to the estimated position of where the ball goes into the goal and block it.
-- **general_agent**: ...
+- **general_agent**: GeneralAgent will chase the ball on the field, while adhering to field boundaries. It is mainly a demonstration of an agent template for the physical field. It uses the world2robot function to dynamically chase any arbitrary point (such as a robot moving robot shell).
+- **path_general_agent**: PathGeneralAgent is a path planner agent. It uses the PRMController class to dynamically path-plan on the field. It will chase an arbitrary point that can be dynamic while avoiding dynamic obstacles.
+- **sim_path_agent**: Class name being SimulationAgent, this agent will path-plan using the same PRMController to path-plan, but only in the simulator (grSim).
+- **simple_agent**: SimpleAgent is a basic template for an agent that can chase any dynamic coordinate in the simulator. It will not avoid obstacles, but can adhere to field boundaries if setup accordingly. 
 - ...
 
 ## Running the code on the robot

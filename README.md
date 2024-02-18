@@ -43,8 +43,13 @@ Steps what needs to be done to use the robot
 * Clone this repository / branch on your machine:
   we are using the ssl-vision-client as a submodule, so you should use the "--recursive" option when cloning:
 
+With SSH:
 ```
   git clone --branch quali-video-code-restructured --recursive git@github.com:WSU-TurtleRabbit/code.git
+```
+Clone with a token instead:
+```
+git clone --branch quali-video-code-restructured --recursive https://github.com/WSU-TurtleRabbit/code.git
 ```
 
   If you already cloned the repo, but not recursively, or for a different branch, then you can fix that with these steps:

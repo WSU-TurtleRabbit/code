@@ -17,7 +17,7 @@ class Model:
         self.isYellow = isYellow
         self.camera_data = list()
         # currently not used, but will be used in the future (maybe)
-        self.balls = None
+        self.balls = {}
         self.yellows = {}
         self.blues = {}
         self.our_robots = {} # Dictionary with robot IDs as keys and positions as values
@@ -164,19 +164,18 @@ class Model:
         Returns:
             ball_position: returns ball position as a tuple
         """
-        self.balls = {}
-        i = 0
+        
         # if the field has at least 1 ball
-        for ball in balls:
-            i +=1
+        for i, ball in enumerate(balls):
             # updates this module's ball position
             #ball_position = (ball.x, ball.y)
-            self.balls[str(i)] = {"c":ball.confidence,"x":ball.x,"y":ball.y,"px":ball.pixel_x,"py":ball.pixel_y}
+            self.ball[str(i)] = {"c":ball.confidence,"x":ball.x,"y":ball.y,"px":ball.pixel_x,"py":ball.pixel_y}
            # print(self.listofballs)
             
         #return self.ball_position
     
-
+    #ball linear regression
+    
         
     def extract_field_lines(self, lines):
         for line in lines:

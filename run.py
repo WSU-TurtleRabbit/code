@@ -37,24 +37,24 @@ if __name__ ==  '__main__':
     world_pipe = receiver.pipe()
     world_update = Process(target=receiver.listen_world)
 
-    skills = SkillControl(world_pipe, [])
-    skill_pipe = skills.pipe()
-    team_controller = Process(target=skills.run_skill_loop)
+    # skills = SkillControl(world_pipe, [])
+    # skill_pipe = skills.pipe()
+    # team_controller = Process(target=skills.run_skill_loop)
 
-    server = Server(skill_pipe,0)
+    # server = Server(skill_pipe,0)
 
-    robot_receive = Process(target=server.listen_udp)
-    send_action_to_robot = Process(target=server.run)
+    # robot_receive = Process(target=server.listen_udp)
+    # send_action_to_robot = Process(target=server.run)
 
-    team_controller.start()
+    # team_controller.start()
     world_update.start()
-    robot_receive.start()
-    send_action_to_robot.start()
+    # robot_receive.start()
+    # send_action_to_robot.start()
 
-    team_controller.join()
+    # team_controller.join()
     world_update.join()
-    robot_receive.join()
-    send_action_to_robot.join()
+    # robot_receive.join()
+    # send_action_to_robot.join()
 
     print('Whoops??! Something went really wrong for this to print?!')
 

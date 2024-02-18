@@ -18,7 +18,7 @@ class Receiver:
             sock(socket): the UDP socket that connects to software
             model(world_model):
         """
-        self.ip_addr = ip_addr
+        self.ip_addr = ip_addr # 224.5.23.2?
         self.port = port
         self.sock = None
         self.model = world_model

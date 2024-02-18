@@ -53,7 +53,7 @@ class Simulation():
     # Main loop for receiving data from ssl-vision-client. Can be swapped for a UDP
     # server. 
     def receive_data(self):
-        with subprocess.Popen(["./ssl-vision-cli"], stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, text=True) as p:
+        with subprocess.Popen(["./ssl-vision-client/cmd/ssl-vision-cli/ssl-vision-cli"], stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, text=True) as p:
             for line in iter(p.stdout.readline, ''):
                 self.process_data(line)
 
@@ -89,7 +89,8 @@ class Simulation():
                 
                 if not (vx == 0 and vy == 0 and vw == 0):
                     print(f"Real robot velocities for ID {robot_id}: {vw}, {vx}, {vy}")
-                    self.physicalRobotSender.send_command(vw, vx, vy)
+                    #self.physicalRobotSender.send_command(vw, vx, vy)
+                    self.grSimSender.send_command(robot_id, vx, vy, vw, is_team_yellow=False)
                 else:
                     print("Sending no velocities because they are all 0")
 
@@ -124,7 +125,7 @@ class Simulation():
     # Function returns true if the dictionaries of robot IDs have been filled with
     # 6 players on each team
     def is_ready(self):
-        return (len(self.detection["robots_blue"]) >= 1)
+        return (len(self.detection["robots_yellow"]) >= 6) and (len(self.detection["robots_blue"]) >= 6)
     
     # Function for agents to retrieve the game state
     def get_data(self):
@@ -142,10 +143,10 @@ class Simulation():
 
 
 # Initialize active agents
-general_agent = GeneralAgent(1)
+#general_agent = GeneralAgent(1)
 #general_agent4 = PathGeneralAgent(4)
-#sim_path_agent = SimulationAgent(5)
+sim_path_agent = SimulationAgent(5)
 #goalie_agent = GoalieAgent(id=1)
 
-sim = Simulation([general_agent])
+sim = Simulation([sim_path_agent])
 sim.run()

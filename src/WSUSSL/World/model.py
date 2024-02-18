@@ -4,7 +4,7 @@ from collections import defaultdict
 # from multiprocessing import Pipe
 
 class Model:
-    def __init__(self,isYellow = False):
+    def __init__(self,isYellow = False, camera_num=4):
         """_summary_
             This function initialises the WorldModel.
             The user will first have to input the team color
@@ -13,9 +13,11 @@ class Model:
             isYellow: is a boolean to identify if our team is yellow or not.
         """
         self.history = list()
+        self.camera_num = camera_num
         self.frame_data = {}
         self.isYellow = isYellow
-        self.camera_data = list()
+        self.camera_data = {}
+        self.cameras = list()
         # currently not used, but will be used in the future (maybe)
         self.balls = {}
         self.yellows = {}
@@ -36,48 +38,75 @@ class Model:
             ball_position: sets ball's x,y position.
             
         """
-        print("updating field detection data ...")
+        #("updating field detection data ...")
         self.frame_number = detection.frame_number
         self.t_capture = detection.t_capture
         self.t_sent = detection.t_sent
-        self.camera_id = detection.camera_id
-        
-        #counts number of campera
-        self.camera_num = len(self.cameras)
-        for i in range(self.camera_num) :    
-            self.extract_ball_position(detection.balls)
-            self.update_team(detection.robots_yellow,detection.robots_blue)
-            #updates this camera data
-            self.camera_data[f"camera{self.camera_id}"] = {
-                "balls" : self.balls,
-                "our_robots" : self.our_robots,
-                "opponent_robots" : self.opponent_robots
-            }
+        self.camera_id = detection.camera_id      
+        self.extract_ball_position(detection.balls)
+        self.update_team(detection.robots_yellow,detection.robots_blue)
         self.save_data()
         
     
-    def save_data(self,average=True,framerate=60,frames_to_save = 5):
-        # print(self.camera_data.keys())
-        # object_count = defaultdict(int)
-        # averaged_camera_data={}
-        # # frame_data.append(self.camera_data)
-        # for key,data in self.camera_data.values():
-        #     averaged_camera_data[key] = {} #init
-        #     for camera_key,camera_value in data.items():
-        #         averaged_camera_data[key][camera_key] = []
-        #         for object_key, object_value in camera_value.items():
-        #             object_count[object_key]+=1
-        #             if object_count >1:
-        #                 averaged_camera_data[key][camera_key][object_key] = np.mean
+    def save_data(self, average=True, framerate=60, frames_to_save=5):
+        """_summary_
+            WORKING IN PROGRESS
+        Args:
+            average (bool, optional): _description_. Defaults to True.
+            framerate (int, optional): _description_. Defaults to 60.
+            frames_to_save (int, optional): _description_. Defaults to 5.
+        """
+        self.frame_data = {
+            "frame": self.frame_number,
+            "balls": self.balls,
+            "our_robots": self.our_robots,
+            "opponent_robots": self.opponent_robots
+        }
 
-        #             averaged_camera_data[key][camera_key][object_key]
-        # self.frame[self.frame_number] = averaged_camera_data
+        # Check if the frame already exists in the history
+        if any(entry["frame"] == self.frame_data["frame"] for entry in self.history):
+            for i, entry in enumerate(self.history):
+                if entry["frame"] == self.frame_data["frame"]:
+                    # Update the existing frame data in the history
+                    self.history[i] = self.frame_data
+                    break
+        else:
+            self.history.append(self.frame_data)
 
-        self.history.append(self.frame_data)
-        if (len(self.history) > frames_to_save):
-            self.history.pop(0)
+        # Check if history has reached frames_to_save
+        if len(self.history) >= frames_to_save and self.camera_id == self.camera_num-1:
+            # Average the robot data
+            new_our_robots = self.average_robot(self.our_robots)
+            new_opponent_robots = self.average_robot(self.opponent_robots)
+            print(f"AVERAGE OUR ROBOTS: {new_our_robots}")
+            print(f"AVERAGE OPPONENT ROBOTS: {new_opponent_robots}")
+            
+            # Clear history
+            self.history = []
+
+    def average_robot(self, robot_list: dict):
+        """_summary_
+            WORKING IN PROGRESS
+        Args:
+            robot_list (dict): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        average_position = {}
+        for robot_id, data in robot_list.items():
+            arr_data = np.array([[entry["x"], entry["y"], entry["o"], entry["px"], entry["py"]] for entry in data])
+            averages = np.mean(arr_data, axis=0)
+            average_position[robot_id] = {
+                "x": averages[0],
+                "y": averages[1],
+                "o": averages[2],
+                "px": averages[3],
+                "py": averages[4]
+            }
+        return average_position
         
-    
+        
     def update_geometry(self,geometry):
         """_summary_
             Retrieves geometry data about the field and stores in the world_model.
@@ -135,12 +164,12 @@ class Model:
         for robot in robots:
             #stores robot data into the dictionary
             s = {
-                "c":robot.confidence, 
-                 "x":robot.x, 
-                 "y":robot.y, 
-                 "o":robot.orientation, 
-                 "px": robot.pixel_x, 
-                 "py":robot.pixel_y}
+                "c":round(robot.confidence,2), 
+                 "x": round(robot.x,4), 
+                 "y": round(robot.y,4), 
+                 "o": round(robot.orientation,4), 
+                 "px": round(robot.pixel_x,4), 
+                 "py": round(robot.pixel_y,4)}
             robot_dict[str(robot.robot_id)] = s
         #sorts the robot list according to it's id
         sorted_robot_dict = {k: robot_dict[k] for k in sorted(robot_dict)}
@@ -169,7 +198,13 @@ class Model:
         for i, ball in enumerate(balls):
             # updates this module's ball position
             #ball_position = (ball.x, ball.y)
-            self.ball[str(i)] = {"c":ball.confidence,"x":ball.x,"y":ball.y,"px":ball.pixel_x,"py":ball.pixel_y}
+            self.balls[str(i)] = {
+                "c":round(ball.confidence,2),
+                "x":round(ball.x,4),
+                "y":round(ball.y,4),
+                "px":round(ball.pixel_x,4),
+                "py":round(ball.pixel_y,4)
+            }
            # print(self.listofballs)
             
         #return self.ball_position
@@ -182,7 +217,11 @@ class Model:
             name = line.name
             p1 = (line.p1.x, line.p1.y)
             p2 = (line.p2.x, line.p2.y)
-            self.lines[name]={"p1":p1, "p2": p2,"thickness":line.thickness}
+            self.lines[name]={
+                "p1":p1, 
+                "p2": p2,
+                "thickness":line.thickness
+            }
         #print(self.lines)
     
     def extract_field_arc(self,arcs):

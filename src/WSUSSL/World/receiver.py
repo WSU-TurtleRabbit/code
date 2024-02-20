@@ -68,7 +68,9 @@ class Receiver:
         while True: #while it is true, it will always listen and update world model with the data
             data = self.receive()
             self.update_world_model(data)
-            self.world_pipe.send(self.model)
+            if self.model.updated:
+                print("send world model")
+                self.world_pipe.send(self.model)
             data = ""
             
     def receive(self):
@@ -86,7 +88,10 @@ class Receiver:
         """
 
         if data.HasField('detection'):
+            self.updated = False
             self.model.update_detection(data.detection)
+            
+            
             #print(data.detection)
 
         if data.HasField('geometry'):

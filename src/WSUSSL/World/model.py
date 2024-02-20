@@ -1,29 +1,33 @@
 # import time #we might want to have our own timer
 import numpy as np
 from collections import defaultdict
-# from multiprocessing import Pipe
+from multiprocessing import Pipe
 
 class Model:
-    def __init__(self,isYellow = False, camera_num=4):
+    def __init__(self,isYellow = False, max_camera=4):
         """_summary_
             This function initialises the WorldModel.
-            The user will first have to input the team color
-            1 char will be recommended
         Param:
-            isYellow: is a boolean to identify if our team is yellow or not.
+            isYellow: is a boolean to identify if our team is YELLOW. Default : BLUE
         """
-        self.history = list()
-        self.camera_num = camera_num
-        self.frame_data = {}
+        self.max_camera = max_camera
         self.isYellow = isYellow
-        self.camera_data = {}
-        self.cameras = list()
+        self.frame_number = 0
+        self.frame_count = 0
+        self.updated=False
+
         # currently not used, but will be used in the future (maybe)
         self.balls = {}
         self.yellows = {}
         self.blues = {}
         self.our_robots = {} # Dictionary with robot IDs as keys and positions as values
         self.opponent_robots = {} # Similar structure for opponent robots
+        self.yellow_history = list()
+        self.blue_history = list()
+        self.ball_history = list()
+        self.history = list()
+        
+        
    
     def update_detection(self,detection):
         """_summary_
@@ -38,17 +42,28 @@ class Model:
             ball_position: sets ball's x,y position.
             
         """
-        #("updating field detection data ...")
-        self.frame_number = detection.frame_number
+        #("updating field detection data ...")'
+        #print(detection)
+        self.set_frame(detection.frame_number)
         self.t_capture = detection.t_capture
         self.t_sent = detection.t_sent
         self.camera_id = detection.camera_id      
         self.extract_ball_position(detection.balls)
         self.update_team(detection.robots_yellow,detection.robots_blue)
-        self.save_data()
+        self.update_data()
+        
+        
+    def set_frame(self,frame_number):
+        #print(self.frame_number,frame_number)
+        if(self.frame_number!=frame_number):
+            self.frame_number = frame_number
+            self.newFrame = True
+        else:
+            self.newFrame = False
+
         
     
-    def save_data(self, average=True, framerate=60, frames_to_save=5):
+    def update_data(self, frames_to_save=5):
         """_summary_
             WORKING IN PROGRESS
         Args:
@@ -56,56 +71,64 @@ class Model:
             framerate (int, optional): _description_. Defaults to 60.
             frames_to_save (int, optional): _description_. Defaults to 5.
         """
-        self.frame_data = {
-            "frame": self.frame_number,
-            "balls": self.balls,
-            "our_robots": self.our_robots,
-            "opponent_robots": self.opponent_robots
-        }
-
-        # Check if the frame already exists in the history
-        if any(entry["frame"] == self.frame_data["frame"] for entry in self.history):
-            for i, entry in enumerate(self.history):
-                if entry["frame"] == self.frame_data["frame"]:
-                    # Update the existing frame data in the history
-                    self.history[i] = self.frame_data
-                    break
-        else:
-            self.history.append(self.frame_data)
-
-        # Check if history has reached frames_to_save
-        if len(self.history) >= frames_to_save and self.camera_id == self.camera_num-1:
-            # Average the robot data
-            new_our_robots = self.average_robot(self.our_robots)
-            new_opponent_robots = self.average_robot(self.opponent_robots)
-            print(f"AVERAGE OUR ROBOTS: {new_our_robots}")
-            print(f"AVERAGE OPPONENT ROBOTS: {new_opponent_robots}")
-            
-            # Clear history
-            self.history = []
-
-    def average_robot(self, robot_list: dict):
-        """_summary_
-            WORKING IN PROGRESS
-        Args:
-            robot_list (dict): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        average_position = {}
-        for robot_id, data in robot_list.items():
-            arr_data = np.array([[entry["x"], entry["y"], entry["o"], entry["px"], entry["py"]] for entry in data])
-            averages = np.mean(arr_data, axis=0)
-            average_position[robot_id] = {
-                "x": averages[0],
-                "y": averages[1],
-                "o": averages[2],
-                "px": averages[3],
-                "py": averages[4]
-            }
-        return average_position
+        # self.ball_history,self.blue_history,self.yellow_history
         
+          
+        if self.frame_count >frames_to_save:
+            average_blue = self.average(self.blue_history)
+            average_yellow = self.average(self.yellow_history)
+            average_ball = self.average(self.ball_history)
+            if len(self.history) <frames_to_save:
+                self.history.append((average_blue,average_yellow,average_ball))
+                print(len(self.history))
+            else: 
+                self.history.pop(0)
+            self.blue_history = []
+            self.yellow_history = []
+            self.ball_history = []
+            self.frame_count = 0
+            self.updated = True
+        
+        if self.newFrame or self.frame_count==0: 
+            self.blue_history.append(self.blues)
+            self.yellow_history.append(self.yellows)
+            self.ball_history.append(self.balls)
+            self.frame_count +=1
+        elif not self.newFrame:
+            #update the last history
+            self.blue_history[-1] = self.blues
+            self.yellow_history[-1] = self.yellows
+            self.ball_history[-1] = self.balls
+            self.updated = False
+            
+    def average(self,robotlist):
+        averaged_robots,x,y,o,px,py = {},[],[],[],[],[]
+        try:
+            for i in range(6):
+                print(i)
+                for data in robotlist:
+                    robotdict = dict(data)
+                    robot_ids = list(robotdict.keys())
+                    #print(robotlist)
+                    robot_id = robot_ids[i]
+                    x.append(robotdict[robot_id].get("x"))
+                    y.append(robotdict[robot_id].get("y"))
+                    o.append(robotdict[robot_id].get("o"))
+                    px.append(robotdict[robot_id].get("px"))
+                    py.append(robotdict[robot_id].get("py"))
+                ax,ay,ao,apx,apy = np.array(x),np.array(y),np.array(o),np.array(px),np.array(py)
+                averaged = {
+                    "x" : round(np.mean(ax,axis=0),4),
+                    "y" : round(np.mean(ay,axis=0),4),
+                    "o" : round(np.mean(ao,axis=0),4),
+                    "px": round(np.mean(apx,axis=0),4),
+                    "py": round(np.mean(apy,axis=0),4)
+                }
+                averaged_robots[robot_id] = averaged
+                print (f"average of robot:{averaged_robots}")
+            return averaged_robots
+        except Exception as e:
+            print(e)
         
     def update_geometry(self,geometry):
         """_summary_
@@ -125,7 +148,7 @@ class Model:
         self.arc = {}
         self.extract_field_lines(field.field_lines)
         self.extract_field_arc(field.field_arcs)
-        return
+        
             
     def update_team(self,yellow_team, blue_team):
         
@@ -144,7 +167,7 @@ class Model:
     def update_robot_status(self, robot_dict, status):
         for robot in status:
             robot_id =  robot.robot_id 
-            robot_dict[str(robot_id)] = {
+            robot_dict[robot_id] = {
                 "is_infrared" :robot.infrared,
                 "is_flat_kick" : robot.flat_kick,
                 "is_chip_kick" : robot.chip_kick
@@ -164,13 +187,13 @@ class Model:
         for robot in robots:
             #stores robot data into the dictionary
             s = {
-                "c":round(robot.confidence,2), 
+                "c":  round(robot.confidence,2), 
                  "x": round(robot.x,4), 
                  "y": round(robot.y,4), 
                  "o": round(robot.orientation,4), 
                  "px": round(robot.pixel_x,4), 
                  "py": round(robot.pixel_y,4)}
-            robot_dict[str(robot.robot_id)] = s
+            robot_dict[robot.robot_id] = s
         #sorts the robot list according to it's id
         sorted_robot_dict = {k: robot_dict[k] for k in sorted(robot_dict)}
         return sorted_robot_dict
@@ -260,12 +283,12 @@ class Model:
         :param is_our_team: Boolean indicating if the robot is on our team.
         :return: Position of the robot or None if not found.
         """
-        rid = str(robot_id)
+        #rid = str(robot_id)
         try:
             if is_our_team: # your team
-                robot_data = self.our_robots.get(rid)
+                robot_data = self.our_robots.get(robot_id)
             else: # enemy team
-                robot_data = self.opponent_robots.get(rid)
+                robot_data = self.opponent_robots.get(robot_id)
             robot_x = robot_data["x"]
             robot_y = robot_data["y"]
             robot_o = robot_data["o"]
@@ -276,12 +299,12 @@ class Model:
             pass
 
     def get_robot_status(self, robot_id, is_our_team):
-        rid = str(robot_id)
+       # rid = str(robot_id)
         try:
             if is_our_team: # your team
-                robot_status = self.our_robots.get(rid)
+                robot_status = self.our_robots.get(robot_id)
             else: # enemy team
-                robot_status = self.opponent_robots.get(rid)
+                robot_status = self.opponent_robots.get(robot_id)
             robot_is_ir = robot_status["is_infrared"]
             robot_is_flat_kick = robot_status["is_flat_kick"]
             robot_is_chip_kick = robot_status["is_chip_kick"]

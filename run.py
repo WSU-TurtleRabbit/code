@@ -34,6 +34,8 @@ if __name__ ==  '__main__':
     #     case 2:
     #         receiver = grsim_coms(world)
     
+    #receiver.listen_world()
+    
     world_pipe = receiver.pipe()
     world_update = Process(target=receiver.listen_world)
 

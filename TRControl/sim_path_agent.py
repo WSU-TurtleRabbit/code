@@ -5,7 +5,7 @@ import random
 
 from agent import agent
 from agent_behaviours import go_towards_target
-from prm import PRMController, Obstacle, Utils
+from classes import PRMController, Obstacle, Utils
 
 class SimulationAgent(agent):
     def __init__(self, id):
@@ -40,7 +40,7 @@ class SimulationAgent(agent):
 
 
 
-        numSamples = 7 #default: 47
+        numSamples = 47 #default: 47
         buffer = 250 #mm # dimension of the obstacles will be a square of the size 2*buffer x 2*buffer
 
         # Set obstacles
@@ -80,15 +80,22 @@ class SimulationAgent(agent):
             # Initial random seed to try
             initialRandomSeed = 0 # random.randint(0, 10000)
 
-            # pointsToEnd, dist = prm.runPRM(initialRandomSeed) # distance not used yet
-            pointsToEnd, dist = prm.runPRM(initialRandomSeed, saveImage=False)
-            if dist == None:
-                pointsToEnd = [active_robot_position, self.target_position]
-                print('no path found, go direct')
-            self.waypoints = pointsToEnd.copy()
 
-            # pointsToEnd[0] = current position, pointsToEnd[1] = next target position as input for go_to_target function
-            new_target_point = pointsToEnd[1]
+            try:
+                # pointsToEnd, dist = prm.runPRM(initialRandomSeed) # distance not used yet
+                pointsToEnd, dist = prm.runPRM(initialRandomSeed, saveImage=False)
+                if dist == None:
+                    pointsToEnd = [active_robot_position, self.target_position]
+                    print('no path found, go direct')
+                self.waypoints = pointsToEnd.copy()
+
+                # pointsToEnd[0] = current position, pointsToEnd[1] = next target position as input for go_to_target function
+                new_target_point = pointsToEnd[1]
+            except IndexError:
+                self.vx, self.vy, self.vz = 0, 0, 0
+                print("Index error")
+                return self.id, self.vx, self.vy, self.vz
+
         else:
             new_target_point = self.waypoints[1]
             xdiff = new_target_point[0] - active_robot_position[0]
@@ -100,4 +107,3 @@ class SimulationAgent(agent):
         self.vx, self.vy = go_towards_target(new_target_point, active_robot_position)
 
         return self.id, self.vx, self.vy, self.vz
-

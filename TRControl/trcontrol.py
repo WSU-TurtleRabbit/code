@@ -86,7 +86,9 @@ class Simulation():
                     agent.set_target(ball_position)
                 # Retrieve desired velocities from each agent's act method
                 robot_id, vx, vy, vw = agent.act(self.get_data())
-                
+                result = self.get_data()
+                print()
+                print(f"What the agent sees: {result}")
                 if not (vx == 0 and vy == 0 and vw == 0):
                     print(f"Real robot velocities for ID {robot_id}: {vw}, {vx}, {vy}")
                     #self.physicalRobotSender.send_command(vw, vx, vy)

@@ -5,7 +5,7 @@ import random
 
 from agent import agent
 from agent_behaviours import go_towards_target
-from classes import PRMController, Obstacle, Utils
+from prm import PRMController, Obstacle, Utils
 
 class SimulationAgent(agent):
     def __init__(self, id):

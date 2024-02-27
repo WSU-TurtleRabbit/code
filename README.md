@@ -13,7 +13,46 @@ List of agents and what they do:
 - ...
 
 ## Running the code on the robot
-Steps what needs to be done to use the robot
+For the robot to be ready to receive commands from the trcontrol.py on the main computer, you need to run MotorControlScript.py on the robot, and wait until you see that it confirms that it is
+"listening to UDP packets".
+
+The IP address in the UDPServer class in MotorControlScript.py must match the IP and port that is initialised in the Simulation class on trcontrol.py(the main script). As long as the port and IP numbers
+match both in trcontrol.py and MotorControlScript.py, it will be able to receive commands.
+
+### More detailed instructions for running the code on the robot
+You can do this manually or remotely via SSH.
+
+Manual Method:
+For the manual method, plug in the robot's raspberry pi to a monitor via HDMI, plug in a USB mouse and USB keyboard. For this situation, it is fine to use the battery for power, so remember to switch
+the robot on via the switch.
+
+You must first check the IP address of the robot. In the terminal, execute:
+```
+ifconfig
+```
+This should bring up something like:
+```
+    wlan0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+            inet 172.20.10.13  netmask 255.255.255.0  broadcast 192.168.1.255
+```
+
+The IP address is the one next to "inet". An alternative command would be:
+```
+hostname -I
+```
+
+Then once, you are sure that the IP address is the same in both the trcontrol.py script(the main script) and MotorControlScript.py, you can continue with the next step.
+
+In the terminal, execute:
+```
+python3 MotorControlScript.py
+```
+
+That should work as it is in the main directory usually. At this point, if the robot prints "listening to UDP commands" on the console, you can unplug everything and keep it switched on.
+At this point it will be controlled by the main script trcontrol.py. The main script uses module "command_senders.py" to send commands. There is an example script of how an architecture can 
+use command_senders.py to send commands to the physical robot with MotorControlScript.py running on the robot, inside the motor control folder. 
+
+This wiki is a work in progress. If there are issues following in instructions, let me know those specific issues so that I can include clearer instructions for them
 
 ## ...
 

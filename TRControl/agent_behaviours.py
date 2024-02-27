@@ -81,7 +81,7 @@ def enforce_field_boundaries(x, y, vx, vy):
 #         go_towards_target((x, new_y), (x, y), speed=1)
 
 
-def go_towards_target(target_position, agent_position, speed=1.0, slow_threshold=600, stop_threshold=80):
+def go_towards_target(target_position, agent_position, speed=1.0, slow_threshold=300, stop_threshold=50):
     """
     Calculate velocity components to move the agent towards a target position.
 

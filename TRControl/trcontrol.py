@@ -18,6 +18,7 @@ from command_senders import grSimCommandSender, PhysicalRobotCommandSender
 from sim_path_agent import SimulationAgent
 from goalie_agent import GoalieAgent
 from path_general_agent import PathGeneralAgent
+from simple_agent import SimpleAgent
 
 
 class Simulation():
@@ -81,29 +82,19 @@ class Simulation():
             # Loop through the agents
             for agent in self.agents:
                 ball_position = [self.detection["ball"]["x"], self.detection["ball"]["y"]]
-                if isinstance(agent, GeneralAgent) or isinstance(agent, SimulationAgent) or isinstance(agent, PathGeneralAgent) or isinstance(agent, GoalieAgent):
+                if isinstance(agent, GeneralAgent) or isinstance(agent, SimulationAgent) or isinstance(agent, PathGeneralAgent) or isinstance(agent, GoalieAgent) or isinstance(agent, SimpleAgent):
                     # Set the agent's target to the ball's position
                     agent.set_target(ball_position)
                 # Retrieve desired velocities from each agent's act method
                 robot_id, vx, vy, vw = agent.act(self.get_data())
                 
-                if not (vx == 0 and vy == 0 and vw == 0):
+                if not (vx == 0 and vy == 0 and vw == 0): # To avoid straining motors with "zero" commands
                     print(f"Real robot velocities for ID {robot_id}: {vw}, {vx}, {vy}")
-                    K = 1
-                    self.physicalRobotSender.send_command(vw, vx, vy, K)
+                    K = 1 # Simulating a kick command
+                    self.physicalRobotSender1.send_command(vw, vx, vy, K)
                     self.grSimSender.send_command(robot_id, vx, vy, vw, is_team_yellow=False)
                 else:
                     print("Sending no velocities because they are all 0")
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -132,6 +123,8 @@ class Simulation():
                 robot_id = blue_player["robot_id"]
                 self.detection["robots_blue"][robot_id] = blue_player
 
+
+        # Create a list of historical ball positions (should be expanded further)
         self.history.append(self.detection["ball"])
         if(len(self.history)>5):
             self.history.pop(0)
@@ -156,11 +149,14 @@ class Simulation():
         print("The simulation has ended or has been interrupted")
 
 
-# Initialize active agents
-#general_agent = GeneralAgent(1)
-#general_agent4 = PathGeneralAgent(4)
-sim_path_agent = SimulationAgent(5)
+# Initialise active agents
+#general_agent = GeneralAgent(id=11)
+#general_agent4 = PathGeneralAgent(id=4)
+sim_path_agent = SimulationAgent(id=5)
 #goalie_agent = GoalieAgent(id=1)
+simple_agent = SimpleAgent(id=1)
 
-sim = Simulation([sim_path_agent])
+
+# Here we send a list of initialised agents to the Simulation class
+sim = Simulation([sim_path_agent, simple_agent])
 sim.run()

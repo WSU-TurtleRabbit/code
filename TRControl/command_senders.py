@@ -41,8 +41,8 @@ class PhysicalRobotCommandSender:
         self.send_rate = send_rate
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def send_command(self, W, Vx, Vy):
-        message = f"{W},{Vx},{Vy}".encode()
+    def send_command(self, W, Vx, Vy, K):
+        message = f"{W},{Vx},{Vy}, {K}".encode()
         # Use a thread for messages that aren't blocked
         send_thread = threading.Thread(target=self.threaded_send, args=(message,))
         send_thread.start()

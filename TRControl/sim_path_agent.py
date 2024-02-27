@@ -104,6 +104,6 @@ class SimulationAgent(agent):
                 del self.waypoints[1]
 
         self.vz = 0
-        self.vx, self.vy = go_towards_target(new_target_point, active_robot_position)
+        self.vx, self.vy = go_towards_target(new_target_point, active_robot_position, speed=1.0, slow_threshold=600, stop_threshold=80)
 
         return self.id, self.vx, self.vy, self.vz

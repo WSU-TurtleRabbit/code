@@ -129,7 +129,7 @@ That should work as it is in the main directory usually. At this point, if the r
 At this point it will be controlled by the main script trcontrol.py. The main script uses module "command_senders.py" to send commands. There is an example script of how an architecture can 
 use command_senders.py to send commands to the physical robot with MotorControlScript.py running on the robot, inside the motor control folder. 
 
-This wiki is a work in progress. If there are issues following in instructions, let me know those specific issues so that I can include clearer instructions for them
+### This wiki is a work in progress. If there are issues following in instructions, let me know those specific issues so that I can include clearer instructions for them. There will also soon be instructions on remotely sending the script to the robot and running it remotely. It was easier for someone to do it this first time with the manual method, hence it is first included here as a priority.
 
 ## ...
 

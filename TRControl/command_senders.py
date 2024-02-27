@@ -50,4 +50,3 @@ class PhysicalRobotCommandSender:
     def threaded_send(self, message):
         self.sock.sendto(message, (self.ip, self.port))
         #time.sleep(self.send_rate)
-

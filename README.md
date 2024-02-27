@@ -64,6 +64,14 @@ This wiki is a work in progress. If there are issues following in instructions, 
   - Goalie seems to estimate trajectories even when the ball is not moving possibly because the ball position is still not exactly the same in each frame even when the ball is not moving. This may be why the goalie keeps moving all the time.
 - Path Planner:
   - When the target position (milestone) is too close to an obstacle the check collision function deletes the target position from the list of waypoints. Hence it crashes. 
+  - The above problem has been temporarily fixed by catching the exception of an index error. However, this only solves the issue if the active robot is near another obstacle as long
+    as the obstacle is dynamically changing its position. 
+  -The still remaining issue is that even when the ball is within the bounding box of an obstacle, the index error exception still commands the robot to execute velocities of zero.
+   This means that if an obstacle robot is dribbling the ball, the path planning active robot simply does nothing. There needs to be a more specialised exception to catch both 
+   bugs of the path planner. So we need a strategy for when the obstacle robot is dribbling the ball. This report is dervived from a test of sim_path_agent.py vs simple_agent.py.
+   So now the path planning robot doesn't usually crash permanently, but is stuck in a confused state until the ball is free once again. There are still other errors from the path
+   planner that need to be accounted for though. 
+   
 
 ## Open tasks
 - Finetune speed, slow_threshold and stop_threshold of all agents

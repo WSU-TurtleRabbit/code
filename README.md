@@ -56,8 +56,7 @@ agents return data in this format:
 return self.id, self.vx, self.vy, self.vw
 ```
 
-## Note, this wiki is in rapid progression. It will be further written, formatted and cleared up over the next few days. It is being written now with a sense of urgency just to convey
-## the most important information as quickly as possible
+## Note, this wiki is in rapid progression. It will be further written, formatted and cleared up over the next few days. It is being written now with a sense of urgency just to convey the most important information as quickly as possible
 
 
 

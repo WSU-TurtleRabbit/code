@@ -67,7 +67,7 @@ git submodule update --init --recursive
   If you have that, build the `ssl-vision-cli` binary like this:
 
 ```
-  cd code/quali-video-code-restructured/ssl-vision-client/cmd/ssl-vision-cli
+  cd code/base-team-control/ssl-vision-client/cmd/ssl-vision-cli
   go build
 ```
 

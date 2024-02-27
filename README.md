@@ -89,6 +89,35 @@ The IP address is the one next to "inet". An alternative command would be:
 hostname -I
 ```
 
+In MotorControlScript.py, you must make sure the IP address here reflects the IP address you just found via the terminal command ifconfig:
+
+```python
+# Pass the motor_control object to the UDPServer, which sends along to all
+    # functions: "servos" (the dictionary comprehension of controller instances), and the 
+    # "transport" object, which holds the servo bus map. 
+    udp_server = UDPServer("172.20.10.13", 5005, motor_control)
+```
+
+In the main script, trcontrol.py, the same IP address must be in this part of the code:
+
+```python
+class Simulation():
+    def __init__(self, agents):
+        self.agents = agents
+        for agent in self.agents:
+            agent.world2robot_fn = self.world2robot
+        self.detection = {"ball": {"x": None, "y": None}, "robots_yellow": {}, "robots_blue": {}}
+        self.geometry = {}
+        self.history = list()
+
+        self.grSimSender = grSimCommandSender("127.0.0.1", 20011) # For the simulator (change IP if not localhost)
+        self.physicalRobotSender1 = PhysicalRobotCommandSender("172.20.10.13", 5005) # IP address for robot 1
+```
+
+In the above example, the matching IP address should be in the initialisation of the PhysicalRobotCommandSender class. 
+
+Simply: Make sure the IP address is the same in both places in both scripts.
+
 Then once, you are sure that the IP address is the same in both the trcontrol.py script(the main script) and MotorControlScript.py, you can continue with the next step.
 
 In the terminal, execute:

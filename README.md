@@ -45,18 +45,18 @@ Steps what needs to be done to use the robot
 
 With SSH:
 ```
-  git clone --branch quali-video-code-restructured --recursive git@github.com:WSU-TurtleRabbit/code.git
+  git clone --branch base-team-control --recursive git@github.com:WSU-TurtleRabbit/code.git
 ```
 Clone with a token instead:
 ```
-git clone --branch quali-video-code-restructured --recursive https://github.com/WSU-TurtleRabbit/code.git
+git clone --branch base-team-control --recursive https://github.com/WSU-TurtleRabbit/code.git
 ```
 
   If you already cloned the repo, but not recursively, or for a different branch, then you can fix that with these steps:
 
 ```
 cd code
-git checkout quali-video-code-restructured
+git checkout base-team-control-restructured
 git submodule update --init --recursive
 ```
 

@@ -35,6 +35,8 @@ Example of an agent accessing and using frame data:
 my_x = frame['detection']['robots_blue'][self.id]['x']
 my_y = frame['detection']['robots_blue'][self.id]['y']
 my_position = (my_x, my_y)
+```
+
 
 ## Running the code on the robot
 For the robot to be ready to receive commands from the trcontrol.py on the main computer, you need to run MotorControlScript.py on the robot, and wait until you see that it confirms that it is

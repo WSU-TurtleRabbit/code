@@ -120,7 +120,7 @@ Simply: Make sure the IP address is the same in both places in both scripts.
 
 Then once, you are sure that the IP address is the same in both the trcontrol.py script(the main script) and MotorControlScript.py, you can continue with the next step.
 
-In the terminal, execute:
+In the terminal, ON THE RASPBERRY PI of the robot execute:
 ```
 python3 MotorControlScript.py
 ```

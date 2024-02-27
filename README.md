@@ -37,6 +37,29 @@ my_y = frame['detection']['robots_blue'][self.id]['y']
 my_position = (my_x, my_y)
 ```
 
+### How agents make decisions, and why we still need to use central control (the formations script)
+
+This is the main engine of the script that sends data to agents, and receives their decisions. Some lines have been omitted for clarity, and the point here is to explain how it works.
+The main script in this branch, trcontrol.py, will show all the actual details.
+
+```python
+for agent in self.agents:
+# Retrieve desired velocities from each agent's act method
+	robot_id, vx, vy, vw = agent.act(self.get_data())
+```
+
+The above loops through each agent sequentially, sends it the internally filtered frame data via the get_data() method, and each agent returns its desired velocities as well as its robot id.
+This works because we sent a "list" of agent objects to the main simulation class, and here we loop through them. On each iteration of the loop, we know which ID we are working with because 
+agents return data in this format:
+
+```python
+return self.id, self.vx, self.vy, self.vw
+```
+
+## Note, this wiki is in rapid progression. It will be further written, formatted and cleared up over the next few days. It is being written now with a sense of urgency just to convey
+## the most important information as quickly as possible
+
+
 
 ## Running the code on the robot
 For the robot to be ready to receive commands from the trcontrol.py on the main computer, you need to run MotorControlScript.py on the robot, and wait until you see that it confirms that it is

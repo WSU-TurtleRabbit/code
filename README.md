@@ -12,6 +12,30 @@ List of agents and what they do:
 - **simple_agent**: SimpleAgent is a basic template for an agent that can chase any dynamic coordinate in the simulator. It will not avoid obstacles, but can adhere to field boundaries if setup accordingly. 
 - ...
 
+
+### What the agents see
+
+-The agents don't directly see what the client outputs. It is first filtered through the internal python dictionaries in trcontrol.py. These dictionaries are initialised in the main Simulation class in self.detection and self.geometry. 
+
+This is what each agent receives via the "frame" argument:
+
+```python
+{'geometry': {}, 'detection': {'ball': {'x': 0, 'y': 0}, 'robots_yellow': {0: {'confidence': 1, 'robot_id': 0, 'x': 1497.5712, 'y': 1120, 'orientation': -3.1415927, 'pixel_x': 1497.5712, 'pixel_y': 1120}, 1: {'confidence': 1, 'robot_id': 1, 'x': 1497.5712, 'y': 5.717139e-12, 'orientation': 3.1415927, 'pixel_x': 1497.5712, 'pixel_y': 5.717139e-12}, 3: {'confidence': 1, 'robot_id': 3, 'x': 547.5712, 'y': -1.8211606e-11, 'orientation': -3.1415927, 'pixel_x': 547.5712, 'pixel_y': -1.8211606e-11}, 4: {'confidence': 1, 'robot_id': 4, 'x': 2497.5713, 'y': -2.955412e-12, 'orientation': 3.1415927, 'pixel_x': 2497.5713, 'pixel_y': -2.955412e-12}, 5: {'confidence': 1, 'robot_id': 5, 'x': 3597.5713, 'y': -1.6777793e-11, 'orientation': -3.1415927, 'pixel_x': 3597.5713, 'pixel_y': -1.6777793e-11}, 2: {'confidence': 1, 'robot_id': 2, 'x': 1497.5712, 'y': -1120, 'orientation': -3.1415927, 'pixel_x': 1497.5712, 'pixel_y': -1120}}, 'robots_blue': {1: {'confidence': 1, 'robot_id': 1, 'x': -1417.4371, 'y': 29.656864, 'orientation': 0.70621175, 'pixel_x': -1417.4371, 'pixel_y': 29.656864}, 2: {'confidence': 1, 'robot_id': 2, 'x': -1440.695, 'y': -1055.0938, 'orientation': 0.70779437, 'pixel_x': -1440.695, 'pixel_y': -1055.0938}, 3: {'confidence': 1, 'robot_id': 3, 'x': -467.43713, 'y': 29.656864, 'orientation': 0.70621175, 'pixel_x': -467.43713, 'pixel_y': 29.656864}, 4: {'confidence': 1, 'robot_id': 4, 'x': -2417.4373, 'y': 29.656864, 'orientation': 0.70621175, 'pixel_x': -2417.4373, 'pixel_y': 29.656864}, 5: {'confidence': 1, 'robot_id': 5, 'x': -3517.4373, 'y': 29.656864, 'orientation': 0.70621175, 'pixel_x': -3517.4373, 'pixel_y': 29.656864}, 0: {'confidence': 1, 'robot_id': 0, 'x': -1415.1483, 'y': 1105.9684, 'orientation': 0.69634324, 'pixel_x': -1415.1483, 'pixel_y': 1105.9684}}}}
+```
+That is sent to the agents via the main script, trcontrol.py. The agents receive this via this line:
+```python
+robot_id, vx, vy, vw = agent.act(self.get_data())
+```
+
+That is because the get_data() function is sending to the agents the "frame" data as shown above. So within an agent, if you want to access its own id, you access it with "self.id". 
+
+Example of an agent accessing and using frame data:
+
+```python
+my_x = frame['detection']['robots_blue'][self.id]['x']
+my_y = frame['detection']['robots_blue'][self.id]['y']
+my_position = (my_x, my_y)
+
 ## Running the code on the robot
 For the robot to be ready to receive commands from the trcontrol.py on the main computer, you need to run MotorControlScript.py on the robot, and wait until you see that it confirms that it is
 "listening to UDP packets".
